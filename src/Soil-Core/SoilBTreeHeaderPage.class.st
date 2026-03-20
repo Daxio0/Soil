@@ -82,11 +82,6 @@ SoilBTreeHeaderPage >> lastPageOffset: anObject [
 	needWrite := true
 ]
 
-{ #category : #initialization }
-SoilBTreeHeaderPage >> latestVersion [
-	^ 3
-]
-
 { #category : #accessing }
 SoilBTreeHeaderPage >> nextPageOffset [
 	lastPageOffset := lastPageOffset + 1.
@@ -107,9 +102,7 @@ SoilBTreeHeaderPage >> readHeaderFrom: aStream [
 	lastPageOffset :=(aStream next: self pointerSize) asInteger.
 	firstFreePageIndex :=(aStream next: 4) asInteger.
 	size := (aStream next: 6) asInteger.
-	uniqueKeys := (version > 2) 
-		ifTrue: [ aStream next == 1 ]
-		ifFalse: [ true ].
+	uniqueKeys := (aStream next == 1)
 ]
 
 { #category : #accessing }
@@ -142,8 +135,7 @@ SoilBTreeHeaderPage >> writeHeaderOn: aStream [
 		nextPutAll: (lastPageOffset asByteArrayOfSize: self pointerSize);
 		nextPutAll: (firstFreePageIndex asByteArrayOfSize: 4);
 		nextPutAll: (self size asByteArrayOfSize: 6).
-		(version > 2) ifTrue: [ 
-			 (uniqueKeys isNil or: [ uniqueKeys ])
+		(uniqueKeys isNil or: [ uniqueKeys ])
 				ifTrue: [ aStream nextPut:  1 ]
-				ifFalse: [ aStream nextPut: 0 ] ].
+				ifFalse: [ aStream nextPut: 0 ].
 ]

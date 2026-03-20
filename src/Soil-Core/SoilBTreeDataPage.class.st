@@ -17,8 +17,3 @@ SoilBTreeDataPage >> initializeInIndex: aSoilSkipList [
 	keySize := aSoilSkipList keySize.
 	valueSize := aSoilSkipList valueSize 
 ]
-
-{ #category : #initialization }
-SoilBTreeDataPage >> latestVersion [
-	^ 3
-]

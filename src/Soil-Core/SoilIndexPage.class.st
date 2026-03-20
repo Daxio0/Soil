@@ -95,7 +95,7 @@ SoilIndexPage >> label [
 
 { #category : #initialization }
 SoilIndexPage >> latestVersion [
-	self subclassResponsibility 
+	^ 3
 ]
 
 { #category : #accessing }
