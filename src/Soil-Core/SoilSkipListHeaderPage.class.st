@@ -208,11 +208,9 @@ SoilSkipListHeaderPage >> writeHeaderOn: aStream [
 		nextPutAll: (valueSize asByteArrayOfSize: 2);
 		nextPutAll: (maxLevel asByteArrayOfSize: 2);
 		nextPutAll: (lastPageOffset asByteArrayOfSize: 4);
-		nextPutAll: (firstFreePageIndex asByteArrayOfSize: 4).
-		(uniqueKeys isNil or: [ uniqueKeys ])
-				ifTrue: [ aStream nextPut:  1 ]
-				ifFalse: [ aStream nextPut: 0 ].
-		aStream nextPutAll: (self size asByteArrayOfSize: 6).
+		nextPutAll: (firstFreePageIndex asByteArrayOfSize: 4);
+		nextPut: uniqueKeys asBit;
+		nextPutAll: (self size asByteArrayOfSize: 6).
 	self 
 		writeLevelsOn: aStream
 ]
