@@ -35,16 +35,6 @@ SoilBTreeIndexPage >> findKey: aKey [
 	^nil
 ]
 
-{ #category : #private }
-SoilBTreeIndexPage >> findPreviousPage: aKey with: aBTree path: aPath [
-	| item page  |
-	"we record the path of all index pages taken to find the key"
-	aPath add: self.
-	item := self findKey: aKey.
-	page := aBTree pageAt: item value.
-	^ page findPreviousPage: aKey with: aBTree path: aPath
-]
-
 { #category : #initialization }
 SoilBTreeIndexPage >> initializeInIndex: aSoilSkipList [ 
 	keySize := aSoilSkipList keySize

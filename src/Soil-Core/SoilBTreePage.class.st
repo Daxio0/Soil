@@ -49,11 +49,6 @@ SoilBTreePage >> findItemBefore: aKey [
 	^ items before: item ifAbsent: nil
 ]
 
-{ #category : #private }
-SoilBTreePage >> findPreviousPage: aKey with: aBTree path: aPath [ 
-	^ self subclassResponsibility
-]
-
 { #category : #assertions }
 SoilBTreePage >> hasUnderflow [
 	^ self numberOfItems < ((self itemCapacity  / 2) ceiling - 1)

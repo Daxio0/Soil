@@ -241,11 +241,6 @@ SoilIndexIterator >> findPageFor: indexKey [
 	^ self subclassResponsibility
 ]
 
-{ #category : #private }
-SoilIndexIterator >> findPreviousPageOf: aPage [
-	self subclassResponsibility
-]
-
 { #category : #accessing }
 SoilIndexIterator >> first [
 	^ self firstAssociation value
@@ -484,10 +479,6 @@ SoilIndexIterator >> previousAssociation [
 { #category : #accessing }
 SoilIndexIterator >> previousPage [ 
 	| previousPageIndex |
-
-	"the old page format does not have a backpointer, we have to search for the previous page"
-	(currentPage version < 3) 
-		ifTrue: [ ^ self findPreviousPageOf: currentPage ].
 			
 	previousPageIndex := currentPage previous.
 	^(previousPageIndex > 0)

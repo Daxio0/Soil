@@ -102,29 +102,6 @@ SoilBasicBTree >> keySize: anInteger [
 	self rootPage keySize: anInteger
 ]
 
-{ #category : #removing }
-SoilBasicBTree >> legacyRemovePage: aPage [
-	| previousPage |
-	(aPage offset > 1) ifFalse: [ ^ aPage ].
-	
-	aPage isIndexPage ifTrue: [ 
-		"index pages have no prev or next and are empty when we reach here"
-		store removePageAt: aPage offset.
-		^ aPage ].
-
-	"We use the iterator to find the previousPage, to support old format without backlink"
-	previousPage := self newIterator findPreviousPageOf: aPage.
-	previousPage next: aPage next.
-	
-	self addDirtyPage: previousPage.
-	"now remove all keys, this will update the index pages"
-	
-	aPage items reverseDo: [ :item | item ifNotNil: [self basicRemoveKey: item key value: item value  ]].
-	"remove the page from the store"
-	store removePageAt: aPage offset.
-	^ aPage 
-]
-
 { #category : #'instance creation' }
 SoilBasicBTree >> newHeaderPage [
 	^ SoilBTreeHeaderPage new
@@ -202,8 +179,6 @@ SoilBasicBTree >> removePage: aPage [
 		"index pages have no prev or next and are empty when we reach here"
 		store removePageAt: aPage offset.
 		^ aPage ].
-	
-	(aPage version < 3) ifTrue: [ ^ self legacyRemovePage: aPage ].
 
 	previousPage := self pageAt: aPage previous.
 	previousPage next: aPage next.
