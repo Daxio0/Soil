@@ -200,28 +200,3 @@ SoilSkipListPageTest >> testHeaderPageWriteAndRead [
 	self assert: readPage lastPageOffset equals: 2.
 	self deny: readPage needsWrite 
 ]
-
-{ #category : #tests }
-SoilSkipListPageTest >> testWriteOldVersion [
-	| page bytes readPage |
-	page := SoilSkipListHeaderPage new 
-		keySize: 8;
-		valueSize: 8;
-		maxLevel: 16;
-		offset: 1;
-		level: 8;
-		pageSize: 4096;
-		lastPageOffset: 2;
-		instVarNamed: #version put: 1;
-		yourself.
-	1 to: 10 do: [ :n |
-		page addItem: (n -> n) ].
-	self assert: page needsWrite.
-	bytes := ByteArray streamContents: [ :stream |
-		page writeOn: stream ].
-	self deny: page needsWrite.
-	readPage := self readPageFrom: bytes readStream.
-	self assert: readPage version equals: 1.
-	self assert: (readPage instVarNamed: #size) equals: -1 
-
-]

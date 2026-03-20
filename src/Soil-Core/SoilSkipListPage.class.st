@@ -138,10 +138,9 @@ SoilSkipListPage >> readLevelsFrom: aStream [
 	| level |
 	level := aStream next asInteger.
 	right := Array new: level withAll: 0. 
-	(version isNil or: [ version > 2 ]) ifTrue: [ 
-		left := Array new: level withAll: 0. 
-		1 to: level do: [ :n |
-			left at: n put: (aStream next: self leftSize) asInteger ] ].
+	left := Array new: level withAll: 0. 
+	1 to: level do: [ :n |
+			left at: n put: (aStream next: self leftSize) asInteger ].
 	1 to: level do: [ :n |
 		right at: n put: (aStream next: self rightSize) asInteger ]
 ]
@@ -206,11 +205,8 @@ SoilSkipListPage >> writeHeaderOn: aStream [
 SoilSkipListPage >> writeLevelsOn: aStream [ 
 	aStream 
 		nextPut: self level.
-	"for data pages version is nil and for header pages it is 
-	bigger than 2"
-	(version isNil or: [ version > 2 ]) ifTrue: [ 
-		1 to: self level do: [ :n |
-			aStream nextPutAll: ((left at: n) asByteArrayOfSize: self leftSize) ] ].
+	1 to: self level do: [ :n |
+		aStream nextPutAll: ((left at: n) asByteArrayOfSize: self leftSize) ].
 	1 to: self level do: [ :n |
 		aStream nextPutAll: ((right at: n) asByteArrayOfSize: self rightSize) ]
 ]

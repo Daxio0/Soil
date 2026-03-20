@@ -26,11 +26,6 @@ SoilSkipListDataPage >> initializeInIndex: aSoilSkipList [
 	valueSize := aSoilSkipList valueSize 
 ]
 
-{ #category : #initialization }
-SoilSkipListDataPage >> latestVersion [
-	^ 3
-]
-
 { #category : #reading }
 SoilSkipListDataPage >> readHeaderFrom: aStream [ 
 	super readHeaderFrom: aStream.

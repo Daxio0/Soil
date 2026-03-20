@@ -81,11 +81,6 @@ SoilBTreeIndexPage >> isIndexPage [
 	^ true
 ]
 
-{ #category : #initialization }
-SoilBTreeIndexPage >> latestVersion [
-	^ 1
-]
-
 { #category : #testing }
 SoilBTreeIndexPage >> needsCleanup [
 	"We can recycle empty index pages"

@@ -717,45 +717,6 @@ SoilSkipListTest >> testSplitLastPage [
 	index at: 3000 add: 3000
 ]
 
-{ #category : #tests }
-SoilSkipListTest >> testVersionOneRoundtrip [
-
-	index headerPage
-		instVarNamed: #version put: 1;
-		size: -1.
-	1 to: 10 do: [ :n | index at: n add: (n asByteArrayOfSize: 8) ].
-	index removeKey: 4.
-	self assert: index pages size equals: 1.
-	self assert: index size equals: 9.
-
-	"write it and then read it back with a new SoilSkipList"
-	index writePages.
-	index close.
-	index := SoilSkipList new
-		         path: 'sunit-skiplist';
-		         open.
-	self assert: index size equals: 9
-]
-
-{ #category : #tests }
-SoilSkipListTest >> testVersionOneRoundtripAndCompact [
-
-	index headerPage
-		instVarNamed: #version put: 1;
-		size: -1.
-	1 to: 10 do: [ :n | index at: n add: (n asByteArrayOfSize: 8) ].
-	index removeKey: 4.
-	self assert: index pages size equals: 1.
-	self assert: index size equals: 9.
-
-	index writePages.
-	index
-		reopen;
-		compact.
-	self assert: index headerPage version equals: 3.
-	self assert: (index headerPage instVarNamed: #size) equals: 9
-]
-
 { #category : #accessing }
 SoilSkipListTest >> uniqueKeys [
 
