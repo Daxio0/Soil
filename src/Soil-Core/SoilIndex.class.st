@@ -328,11 +328,6 @@ SoilIndex >> lastPage [
 	^ self newIterator lastPage
 ]
 
-{ #category : #removing }
-SoilIndex >> legacyRemovePage: aPage [ 
-	^ self subclassResponsibility
-]
-
 { #category : #public }
 SoilIndex >> markAllDirty [ 
 	store pages do: [ :page | self addDirtyPage: page ]

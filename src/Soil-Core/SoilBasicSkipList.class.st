@@ -66,38 +66,6 @@ SoilBasicSkipList >> isBTree [
 	^ false
 ]
 
-{ #category : #removing }
-SoilBasicSkipList >> legacyRemovePage: aPage [
-	| iterator seen previousPage |
-	(aPage offset > 1) ifFalse: [ ^ aPage ].
-	"we use an iterator to scan pages on all levels that are just right
-	before the page to remove"
-	iterator := self newIterator. 
-	iterator findPreviousPageOf: aPage. 
-	"on each level up to max level the iterator has a reference to a 
-	page. We remember the pages processed in order not to process the
-	same page multiple times"
-	seen := Set new.	
-	1 to: self maxLevel do: [ :level |
-		previousPage := iterator levelAt: level.
-		(seen includes: previousPage) ifFalse: [  
-			seen add: previousPage.
-			self addDirtyPage: previousPage.
-			1 to: previousPage level do: [ :lvl |
-				"each previous page's next pointer might point to the page 
-				to be removed."
-				((previousPage rightAt: lvl) = aPage offset) ifTrue: [ 
-					"We overwrite the next pointer of the previous page with 
-					the next pointer of the page to be removed"
-					previousPage rightAt: lvl put: (aPage rightAt: lvl).
-					previousPage markForWrite ] ] ] ].
-	"finally remove the page from the store"
-	store removePageAt: aPage offset.
-	^ aPage 
-
-
-]
-
 { #category : #accessing }
 SoilBasicSkipList >> maxLevel [
 
@@ -140,7 +108,6 @@ SoilBasicSkipList >> removePage: aPage [
 	| previousPage  nextPage next |
 	"only remove if not header page (> 1)"
 	(aPage offset > 1) ifFalse: [ ^ aPage ].
-	(aPage version < 3) ifTrue: [ ^ self legacyRemovePage: aPage ].
 
 	"we only need to scan up to the level of aPage. Previous/next pages on 
 	higher levels point to different pages"

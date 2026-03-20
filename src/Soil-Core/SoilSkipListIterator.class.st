@@ -77,27 +77,6 @@ SoilSkipListIterator >> findPageFor: indexKey [
 	^ currentPage 
 ]
 
-{ #category : #private }
-SoilSkipListIterator >> findPreviousPageOf: aPage [
-	| pageIndex candidatePage keyOfPage |
-	aPage isHeaderPage ifTrue: [ ^nil ].
-	keyOfPage := aPage smallestKey.
-	
-	currentPage := index headerPage.
-	levels size to: 1 by: -1 do: [ :level |
-		[ 
-			pageIndex := currentPage rightAt: level.
-			(pageIndex > 0) and: [ 
-				candidatePage := self pageAt: pageIndex.
-				candidatePage smallestKey < keyOfPage ] ]
-					whileTrue: [ currentPage := candidatePage  ].
-			self atLevel: level put: currentPage. ].
-	
-	"for now keep an assert here to be sure this works correctly"
-	self assert: (self nextPage == aPage).
-	^ currentPage
-]
-
 { #category : #accessing }
 SoilSkipListIterator >> index: aSoilSkipList [ 
 	super index: aSoilSkipList.
