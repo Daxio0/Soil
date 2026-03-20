@@ -134,8 +134,6 @@ SoilBTreeHeaderPage >> writeHeaderOn: aStream [
 		nextPutAll: (valueSize asByteArrayOfSize: 2);
 		nextPutAll: (lastPageOffset asByteArrayOfSize: self pointerSize);
 		nextPutAll: (firstFreePageIndex asByteArrayOfSize: 4);
-		nextPutAll: (self size asByteArrayOfSize: 6).
-		(uniqueKeys isNil or: [ uniqueKeys ])
-				ifTrue: [ aStream nextPut:  1 ]
-				ifFalse: [ aStream nextPut: 0 ].
+		nextPutAll: (self size asByteArrayOfSize: 6);
+		nextPut: uniqueKeys asBit
 ]
