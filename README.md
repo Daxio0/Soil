@@ -12,7 +12,7 @@ Load it in 64bit Pharo 11/12/13/alpha with Metacello:
 
 ```smalltalk
 Metacello new 
-	repository: 'github://ApptiveGrid/Soil/src';
+	repository: 'github://ApptiveGrid/Soil:main/src';
 	baseline: 'Soil';
 	load.
 ```
