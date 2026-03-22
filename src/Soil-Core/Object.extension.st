@@ -26,6 +26,17 @@ Object >> soilEmit [
 ]
 
 { #category : #'*Soil-Core' }
+Object >> soilRecursiveHash [
+	^ self soilRecursiveHashWith: (IdentitySet new)
+]
+
+{ #category : #'*Soil-Core' }
+Object >> soilRecursiveHashWith: aSet [
+
+	^ self class classLayout soilRecursiveHash: self with: aSet
+]
+
+{ #category : #'*Soil-Core' }
 Object >> soilSizeInMemory [
 	"recursive #sizeInMemory for Soil. 
 	Note: only works for some objects, e.g. SoilPersistentClusterVersion"
