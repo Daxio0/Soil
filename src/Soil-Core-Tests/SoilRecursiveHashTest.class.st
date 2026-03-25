@@ -17,6 +17,19 @@ SoilRecursiveHashTest >> testCollectionPositionExchanged [
 ]
 
 { #category : #tests }
+SoilRecursiveHashTest >> testCollectionPositionExchangedImmediateInt [
+	| array hash1 tmp hash2 |
+	"test that the position detection in Collection works if the basicIdentityHashes are close"
+	array := Array with: 3 with: 1.
+	hash1 := array soilRecursiveHash.
+	tmp := array at: 1.
+	array at: 1 put: (array at: 2).
+	array at: 2 put: tmp.
+	hash2 := array soilRecursiveHash.
+	self deny: hash1 equals: hash2
+]
+
+{ #category : #tests }
 SoilRecursiveHashTest >> testDictionaryKeysExchanged [
 	| dict hash1 hash2 key1 key2 value1 value2 |
 	key1 := 'foo1'.
