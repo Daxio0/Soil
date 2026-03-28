@@ -83,11 +83,6 @@ SoilFreePage >> label [
 	^ 'free page'
 ]
 
-{ #category : #initialization }
-SoilFreePage >> latestVersion [
-	^ 1
-]
-
 { #category : #accessing }
 SoilFreePage >> markDirty [
 	needWrite := true
