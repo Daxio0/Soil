@@ -49,10 +49,12 @@ SoilMaterializer >> nextArray: aClass [
 
 { #category : #reading }
 SoilMaterializer >> nextAssociation: aClass [ 
-
-	^ self registerObject: (aClass
+	| association |
+	association := aClass basicNew.
+	self registerObject: association.
+	^association
 		key: self nextSoilObject
-		value: self nextSoilObject)
+		value: self nextSoilObject
 ]
 
 { #category : #reading }

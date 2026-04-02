@@ -127,7 +127,7 @@ SoilBasicMaterializer >> nextSoilObject [
 	object := (TypeCodeMapping 
 		at: byte
 		ifAbsent: [ Error signal: 'cannot find type code for ', byte asString]) 
-			soilMaterialize: self.
+	soilMaterialize: self.
 	self materializedObject: object.
 	^ object soilMaterializationReplacement
 ]
