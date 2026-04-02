@@ -12,8 +12,9 @@ SoilObjectTableTest >> testAdd [
 	| table |
 	table := SoilObjectTable new.
 	table add: 'Hello'.
-	table add: #hello.
-	table add: #hello.
+	"we always return the alocated index"
+	self assert: (table add: #hello) equals: 2.
+	self assert: (table add: #hello) equals: 2.
 	table add: 'Hello'.
 	self assert: table size equals: 2
 ]
