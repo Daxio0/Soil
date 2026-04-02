@@ -43,6 +43,12 @@ SoilObjectCodec class >> initialize [
 	CharacterEncoder := #utf8 asZnCharacterEncoder
 ]
 
+{ #category : #'instance creation' }
+SoilObjectCodec class >> on: aStream [ 
+	^ self new 
+		stream: aStream 
+]
+
 { #category : #accessing }
 SoilObjectCodec >> stream: aStream [ 
 	stream := aStream

@@ -4,12 +4,6 @@ Class {
 	#category : #'Soil-Serializer-Serializer/Materializer'
 }
 
-{ #category : #'instance creation' }
-SoilBasicSerializer class >> on: aStream [ 
-	^ self new 
-		stream: aStream 
-]
-
 { #category : #public }
 SoilBasicSerializer class >> serializeToBytes: anObject [ 
 

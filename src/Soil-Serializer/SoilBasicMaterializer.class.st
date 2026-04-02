@@ -10,12 +10,6 @@ SoilBasicMaterializer class >> materializeFromBytes: aByteArray [
 		materialize
 ]
 
-{ #category : #'instance creation' }
-SoilBasicMaterializer class >> on: aReadStream [
-	^ self new 
-		stream: aReadStream 
-]
-
 { #category : #'reading - basic' }
 SoilBasicMaterializer >> basicNextString [
 	| string length |
