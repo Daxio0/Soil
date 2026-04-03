@@ -1,3 +1,8 @@
+"
+The basic serializer implements materializing for the subset of simple objects that the SoilBasicSerializer can write.
+
+As there can be no cycles in the datastructure, it can materiaiize without recording the index of materialized objects. This makes the basic materializer much faster than the full materializer 
+"
 Class {
 	#name : #SoilBasicMaterializer,
 	#superclass : #SoilObjectCodec,

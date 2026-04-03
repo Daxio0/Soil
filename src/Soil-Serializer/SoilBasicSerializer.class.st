@@ -1,3 +1,8 @@
+"
+The basic serializer implements serialization for a subset of simple objects.
+
+To know which classes are supported, see the nextPut* methods in the ""writing"" protocol.
+"
 Class {
 	#name : #SoilBasicSerializer,
 	#superclass : #SoilObjectCodec,
