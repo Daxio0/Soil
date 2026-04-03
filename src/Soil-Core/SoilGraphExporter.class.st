@@ -66,7 +66,13 @@ SoilGraphExporter >> export [
 { #category : #'as yet unclassified' }
 SoilGraphExporter >> export: aSoilObjectId [ 
 	self processObjectId: aSoilObjectId.
-	self processLoop 
+	self processLoop
+]
+
+{ #category : #'as yet unclassified' }
+SoilGraphExporter >> exportOn: aStream [ 
+	stream := aStream.
+	self export
 ]
 
 { #category : #initialization }
