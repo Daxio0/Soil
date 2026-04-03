@@ -75,12 +75,6 @@ SoilGraphExporter >> exportOn: aStream [
 	self export
 ]
 
-{ #category : #'as yet unclassified' }
-SoilGraphExporter >> exportOn: aStream [ 
-	stream := aStream.
-	self export
-]
-
 { #category : #initialization }
 SoilGraphExporter >> initialize [ 
 	super initialize.
