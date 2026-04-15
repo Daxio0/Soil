@@ -127,6 +127,11 @@ SoilSkipListPage >> previous [
 	^ self leftAt: 1
 ]
 
+{ #category : #accessing }
+SoilSkipListPage >> previousPageIn: anIndex [
+	^anIndex pageAt: self previous
+]
+
 { #category : #reading }
 SoilSkipListPage >> readHeaderFrom: aStream [ 
 	super readHeaderFrom: aStream.

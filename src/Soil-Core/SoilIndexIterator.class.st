@@ -241,6 +241,11 @@ SoilIndexIterator >> findPageFor: indexKey [
 	^ self subclassResponsibility
 ]
 
+{ #category : #private }
+SoilIndexIterator >> findPageFor: indexKey value: anObject [
+	^ self subclassResponsibility
+]
+
 { #category : #accessing }
 SoilIndexIterator >> first [
 	^ self firstAssociation value
@@ -543,8 +548,8 @@ SoilIndexIterator >> removeKey: key value: value ifAbsent: aBlock [
 	indexKey := index indexKey: key.
 	"We search for the data page for the key to update the value with a removed ID
 	and return the prior value just like #at: would do"
-	self findPageFor: indexKey.
-
+	self findPageFor: indexKey value: value.
+	
 	self flag: #todo.
 	"this is a hack to be able to find the first occurrence but in a 
 	very inefficient way"

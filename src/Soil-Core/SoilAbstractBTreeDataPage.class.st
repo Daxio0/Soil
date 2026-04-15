@@ -28,6 +28,14 @@ SoilAbstractBTreeDataPage >> find: aKey with: aBTree [
 
 ]
 
+{ #category : #private }
+SoilAbstractBTreeDataPage >> findItem: anItem with: aBTree [
+	"we found a data page, it is here or in a previous page"
+	^(items includes: anItem)
+		ifTrue: [ self ]
+		ifFalse: [ (self previousPageIn: aBTree) findItem: anItem with: aBTree]
+]
+
 { #category : #utilities }
 SoilAbstractBTreeDataPage >> headerSize [
 	^ super headerSize  
@@ -116,6 +124,11 @@ SoilAbstractBTreeDataPage >> previous [
 { #category : #accessing }
 SoilAbstractBTreeDataPage >> previous: anObject [
 	previous := anObject
+]
+
+{ #category : #accessing }
+SoilAbstractBTreeDataPage >> previousPageIn: btree [
+	^btree pageAt: previous
 ]
 
 { #category : #reading }

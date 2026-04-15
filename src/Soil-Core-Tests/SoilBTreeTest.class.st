@@ -255,6 +255,35 @@ SoilBTreeTest >> testAddingDuplicateKeyAcrossPages [
 	self assertCollection: elements hasSameElements: ids
 ]
 
+{ #category : #'tests - duplicate' }
+SoilBTreeTest >> testAddingDuplicateKeyAcrossPagesRemove [
+		"we add so many douplicate keys that we spill over to another page.
+                  Then we delete one key-value from the first and last page. Tests that iterator delete can cross to the next page"
+
+	| capacity iterator page |
+	capacity := index headerPage itemCapacity.
+	index allowDuplicateKeys.
+	iterator := index newIterator.
+	
+	1 to: capacity do: [ :n |
+		iterator at: 1 add: n asDummySoilObjectId ].
+	page := iterator currentPage.
+	1 to: capacity do: [ :n |
+		iterator at: 1 add: (capacity + n) asDummySoilObjectId ].
+	
+	"we really added to a second page"
+	self deny: page identicalTo: iterator currentPage.
+	self assert: index size equals: capacity*2.
+	
+	"we should be able to delete from the first page"
+	iterator := index newIterator.
+	self assertCollection:  (iterator at: 1) includesAll: {1 asDummySoilObjectId}.
+	iterator := index newIterator.
+	"removing the first. Fails"
+	iterator removeKey: 1 value: 1 asDummySoilObjectId.
+	self assert: index size equals: capacity*2-1.
+]
+
 { #category : #tests }
 SoilBTreeTest >> testAt [
 
