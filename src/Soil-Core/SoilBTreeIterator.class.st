@@ -32,6 +32,11 @@ SoilBTreeIterator >> findPageFor: indexKey [
 	^currentPage := index rootPage find: indexKey with: index
 ]
 
+{ #category : #private }
+SoilBTreeIterator >> findPageFor: indexKey value: anObject [
+	^currentPage := index rootPage findItem: indexKey->anObject with: index
+]
+
 { #category : #accessing }
 SoilBTreeIterator >> lastPage [
 	"follow the last index entry till reaching a data page"

@@ -40,6 +40,11 @@ SoilBTreePage >> find: aKey with: aBTree [
 ]
 
 { #category : #private }
+SoilBTreePage >> findItem: anItem with: aBTree [ 
+	^ self subclassResponsibility
+]
+
+{ #category : #private }
 SoilBTreePage >> findItemBefore: aKey [
 	"like #itemBefore:, but comparung #<= like #find:with:"
 	| item |
