@@ -42,5 +42,9 @@ SoilReferenceFinder >> visitPersistentClusterVersion: aSoilPersistentClusterVers
 		self visit: reference ].
 	(aSoilPersistentClusterVersion includesReference: objectId) ifTrue: [ 
 		references add: aSoilPersistentClusterVersion ].
+	aSoilPersistentClusterVersion indexIds do:[ :indexId |
+		self 
+			processIndexId: indexId 
+			segment: (soil objectRepository segmentAt: aSoilPersistentClusterVersion segment) ].
 	^ aSoilPersistentClusterVersion 
 ]
