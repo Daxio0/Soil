@@ -310,24 +310,6 @@ SoilIndexIterator >> isEmpty [
  		  	(self restoreItem: each) isNil ]]
 ]
 
-{ #category : #private }
-SoilIndexIterator >> itemsAt: key [ 
-	"still need to restore."
-	| assoc items |
-	currentKey := index indexKey: key.
-	self findPageFor: currentKey.
-	currentPageIndex := currentPage indexOfKey: currentKey.
-	assoc := self previousAssociation.
-	[ assoc notNil and: [ assoc key = key ] ] whileTrue: [ 
-		assoc := self previousAssociation ].
-	assoc := self nextAssociation.
-	items := OrderedCollection new.
-	[ assoc notNil and: [ assoc key = key ] ] whileTrue: [ 
-	   items add: assoc.
-	   assoc := self nextAssociation ].
-	^ items 
-]
-
 { #category : #accessing }
 SoilIndexIterator >> last [
 	^ self lastAssociation value
@@ -626,9 +608,4 @@ SoilIndexIterator >> values [
 	self do: [ :each |
 		values add: each ].
 	^ values
-]
-
-{ #category : #enumerating }
-SoilIndexIterator >> valuesAt: key [
-	^ (self itemsAt: key) collect: #value
 ]

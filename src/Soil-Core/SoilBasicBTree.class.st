@@ -47,12 +47,10 @@ SoilBasicBTree >> basicRemoveKey: key ifAbsent: aBlock [
 ]
 
 { #category : #removing }
-SoilBasicBTree >> basicRemoveKey: key value: aValue ifAbsent: aBlock [
+SoilBasicBTree >> basicRemoveKey: key value: value ifAbsent: aBlock [
 	"Warning: Low level remove. If the page is empty after, the index will not work anymore, as we need minimal one key for search to work. Caller has to remove the empty page!"
 
-	^ (self rootPage removeItem: key -> aValue for: self)
-		  ifNil: [ aBlock value ]
-		  ifNotNil: [ :removedItem | removedItem value ]
+	^ self basicRemoveItem: key->value ifAbsent: aBlock
 ]
 
 { #category : #accessing }
