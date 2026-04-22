@@ -156,10 +156,20 @@ SoilMaterializer >> nextCompiledMethod11: aClass [
 
 	self registerObject: compiledMethod.
 
- 	"first the literals"	
- 	"for now we do store the class pointer in the last literal"	
- 	1 to: compiledMethod numLiterals do: [:i | 
- 				compiledMethod literalAt: i  put: self nextSoilObject ].			
+ 	"first the literals"
+	1 to: compiledMethod numLiterals do: [ :i |		
+		compiledMethod literalAt: i put: self nextSoilObject ].
+	
+	
+	"LiteralVariables have been restored as new instances pointing to nil, we now do a pass to re-lookup. We have to do this as a second pass as the last literal encodes the class name we have to use to re-lookup"
+	
+	1 to: compiledMethod numLiterals do: [ :i |	 | literal className class |	
+		className :=  (compiledMethod literalAt: compiledMethod numLiterals) name.
+		class := Smalltalk globals at: className.
+		literal := compiledMethod literalAt: i.
+		(literal isKindOf: LiteralVariable) ifTrue: [ 
+			compiledMethod literalAt: i put: (class lookupVar: literal name).
+			 ]  ].
 
  	"then the bytecodes, we ignore the trailer for now"
  	compiledMethod initialPC 
@@ -186,9 +196,19 @@ SoilMaterializer >> nextCompiledMethod12: aClass [
 	self registerObject: compiledMethod.
 
 	"first the literals"
-	"for now we do store the class pointer in the last literal"
-	1 to: compiledMethod numLiterals do: [ :i |
-	compiledMethod literalAt: i put: self nextSoilObject ].
+	1 to: compiledMethod numLiterals do: [ :i |		
+		compiledMethod literalAt: i put: self nextSoilObject ].
+	
+	
+	"LiteralVariables have been restored as new instances pointing to nil, we now do a pass to re-lookup. We have to do this as a second pass as the last literal encodes the class name we have to use to re-lookup"
+	
+	1 to: compiledMethod numLiterals do: [ :i |	 | literal className class |	
+		className :=  (compiledMethod literalAt: compiledMethod numLiterals) name.
+		class := Smalltalk globals at: className.
+		literal := compiledMethod literalAt: i.
+		(literal isKindOf: LiteralVariable) ifTrue: [ 
+			compiledMethod literalAt: i put: (class lookupVar: literal name).
+			 ]  ].
 
 	"then the bytecodes, we ignore the trailer for now"
 	compiledMethod initialPC 
