@@ -2,7 +2,8 @@ Class {
 	#name : #SoilPersistentClusterVersion,
 	#superclass : #SoilClusterRecord,
 	#instVars : [
-		'changed'
+		'changed',
+		'fingerprint'
 	],
 	#category : #'Soil-Core-Model'
 }
@@ -55,6 +56,7 @@ SoilPersistentClusterVersion >> materializeObjectUsing: aMaterializer [
 		stream: bytes readStream;
 		externalObjectRegistry: self;
 		materialize.
+	fingerprint := object soilRecursiveHash. 
 	^ object
 ]
 
@@ -122,7 +124,8 @@ SoilPersistentClusterVersion >> resetBytes [
 
 { #category : #asserting }
 SoilPersistentClusterVersion >> shouldBeCommitted [ 
-	^ changed and: [ committed not ]
+	^ committed not and: [ 
+		object soilRecursiveHash ~= fingerprint ]
 ]
 
 { #category : #comparing }
