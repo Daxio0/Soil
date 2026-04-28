@@ -1,3 +1,8 @@
+"
+The basic materializer implements materializing for the subset of simple objects that the SoilBasicSerializer can write.
+
+As there can be no cycles in the datastructure, it can materialize without recording the index of materialized objects. This makes the basic materializer much faster than the full materializer 
+"
 Class {
 	#name : #SoilBasicMaterializer,
 	#superclass : #SoilObjectCodec,
@@ -8,12 +13,6 @@ Class {
 SoilBasicMaterializer class >> materializeFromBytes: aByteArray [
 	^ (self on: aByteArray readStream)
 		materialize
-]
-
-{ #category : #'instance creation' }
-SoilBasicMaterializer class >> on: aReadStream [
-	^ self new 
-		stream: aReadStream 
 ]
 
 { #category : #'reading - basic' }
@@ -127,7 +126,7 @@ SoilBasicMaterializer >> nextSoilObject [
 	object := (TypeCodeMapping 
 		at: byte
 		ifAbsent: [ Error signal: 'cannot find type code for ', byte asString]) 
-			soilMaterialize: self.
+	soilMaterialize: self.
 	self materializedObject: object.
 	^ object soilMaterializationReplacement
 ]

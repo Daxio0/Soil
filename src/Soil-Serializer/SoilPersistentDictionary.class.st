@@ -1,3 +1,12 @@
+"
+The SoilPersistenDictionary is a Soil specific Dictionary
+- all values are roots 
+- markDirty: is called on at:put:
+
+This means that on materialize, it loads all keys in memory, but values are loaded lazyly only when accessed.
+
+
+"
 Class {
 	#name : #SoilPersistentDictionary,
 	#superclass : #Object,

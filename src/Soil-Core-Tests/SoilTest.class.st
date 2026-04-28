@@ -116,6 +116,84 @@ SoilTest >> testCheckpointEmptyRecordsToCommit [
 ]
 
 { #category : #tests }
+SoilTest >> testCyclic [
+	"This test shows that Soil has no problem to serialize cyclic structures
+	In this test, both are roots and thus external references"
+
+	| a1 a2 txn |
+	a1 := Association new.
+	a2 := Association new.
+	a1 value: a2.
+	a2 value: a1.
+
+	txn := soil newTransaction.
+	txn root: SoilPersistentDictionary new.
+	txn root
+		at: #a1 put: a1;
+		at: #a2 put: a2.
+	txn
+		markDirty: txn root;
+		commit.
+	txn := soil newTransaction.
+	self
+		assert: (txn root at: #a1) value yourself identicalTo: (txn root at: #a2) yourself;
+		assert: (txn root at: #a2) value yourself identicalTo: (txn root at: #a1) yourself
+]
+
+{ #category : #tests }
+SoilTest >> testCyclicInternal [
+	"This test shows that Soil has no problem to serialize cyclic structures
+	In this test, we store a cycle that is formed by internal references"
+
+	| a1 a2 txn |
+	a1 := Association new.
+	a2 := Association new.
+	a1 value: a2.
+	a2 value: a1.
+
+	txn := soil newTransaction.
+	txn root: Dictionary new.
+	txn root
+		at: #a1 put: a1;
+		at: #a2 put: a2.
+	txn
+		markDirty: txn root;
+		commit.
+	txn := soil newTransaction.
+	self
+		assert: (txn root at: #a1) value yourself identicalTo: (txn root at: #a2) yourself;
+		assert: (txn root at: #a2) value yourself identicalTo: (txn root at: #a1) yourself
+]
+
+{ #category : #tests }
+SoilTest >> testCyclicProblemPharoSet [
+	"While Soil has no Problem dealing with cyclic references, take care: #hash is often cyclic
+	This test is here to show that problem, see this Pharo issue: https://github.com/pharo-project/pharo/issues/7724 "
+
+	| o1 o2 txn |
+	o1 := Set new.
+	o2 := Set new.
+	o1 add: o2.
+	o2 add: o1.
+	
+	txn := soil newTransaction.
+	txn root: SoilPersistentDictionary new.
+	txn root
+		at: #o1 put: o1;
+		at: #o2 put: o2.
+	txn
+		markDirty: o1;
+		markDirty: o2;
+		commit.
+
+	txn := soil newTransaction.
+	"We can not read as Pharo will call #hash already when creating the set on materialize
+	self
+		assert: ((txn root at: #o1) includes: (txn root at: #o2));
+		assert: ((txn root at: #o2) includes: (txn root at: #o1))"
+]
+
+{ #category : #tests }
 SoilTest >> testDisabledFsync [
 	| tx |
 	soil setup disableFsync.

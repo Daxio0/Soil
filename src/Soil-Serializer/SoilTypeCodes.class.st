@@ -1,3 +1,13 @@
+"
+This is a SharedPool that defines variables for every defined TypeCode that is used to encode classes or special objects by the serializer.
+
+The use of a SharedPool has some nice features
+- easy to find all uses of a TypeCode (by browsing all references to the variable)
+- code that uses TypeCode is easier to read (as opposed to magic constants)
+- speed: reading the var does not need a message send
+
+In additon, the pool defines the TypeCodeMapping, a table of typecode to either a class or a block which is used by the Materializer. When Materializing, we call #soilMaterialize: on the value.
+"
 Class {
 	#name : #SoilTypeCodes,
 	#superclass : #SharedPool,

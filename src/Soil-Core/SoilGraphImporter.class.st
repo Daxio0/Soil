@@ -74,7 +74,7 @@ SoilGraphImporter >> importBehaviorCluster: cluster [
 			self metaSegment 
 				at: newOid index 
 				putBytes: (cluster asNewClusterVersion version: 1; serialize).
-			soil behaviorRegistry nameAt: cluster object behaviorIdentifier put: cluster objectId ] 
+			soil behaviorRegistry nameAt: cluster object behaviorIdentifier put: newOid ] 
 ]
 
 { #category : #'instance creation' }
@@ -187,9 +187,9 @@ SoilGraphImporter >> readCluster [
 	^ cluster 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #actions }
 SoilGraphImporter >> replaceObject: anAGUser [ 
-	replacements add: (transaction objectIdOf: anAGUser) 
+	replacements add: (transaction objectIdOf: anAGUser)
 ]
 
 { #category : #accessing }

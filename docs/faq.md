@@ -1,5 +1,12 @@
 # Frequently asked questions
 
+
+## Serializer
+
+### Can Soil store object structures with cyclic references ?
+
+Yes ! Soil can wite and read cyclic structures (e.g. an object that points to itself). But you need to take care: #hash in Pharo itself is often implemented to call hash on e.g. all ivars or the content of the collection, which can lead to problems. One example is a Set that contains itself. For Soil, this means that it can store the Set, but on materialize, it might run into the recursive #hash (as would any use that looks via #hash in the Set).
+
 ## Release 
 
 ### Why are releases branches and not tags?

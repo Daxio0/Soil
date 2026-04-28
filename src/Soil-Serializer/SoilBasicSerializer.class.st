@@ -1,14 +1,13 @@
+"
+The basic serializer implements serialization for a subset of simple objects.
+
+To know which classes are supported, see the nextPut* methods in the ""writing"" protocol.
+"
 Class {
 	#name : #SoilBasicSerializer,
 	#superclass : #SoilObjectCodec,
 	#category : #'Soil-Serializer-Serializer/Materializer'
 }
-
-{ #category : #'instance creation' }
-SoilBasicSerializer class >> on: aStream [ 
-	^ self new 
-		stream: aStream 
-]
 
 { #category : #public }
 SoilBasicSerializer class >> serializeToBytes: anObject [ 
