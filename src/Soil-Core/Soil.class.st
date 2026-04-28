@@ -361,10 +361,11 @@ Soil >> newMaterializer [
 
 { #category : #transactions }
 Soil >> newReadOnlyTransaction [
-	^ self transactionManager 
+	^ (self transactionManager 
 		newTransaction: self transactionClass
-		readVersion: self control databaseVersion;
-		beReadOnly
+		readVersion: self control databaseVersion)
+			beReadOnly;
+			yourself 
 ]
 
 { #category : #'instance creation' }
