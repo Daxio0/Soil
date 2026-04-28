@@ -1,13 +1,13 @@
-Extension { #name : #ByteLayout }
+Extension { #name : #BitsLayout }
 
 { #category : #'*Soil-Core' }
-ByteLayout >> soilRecursiveHash: anObject with: aSet [
+BitsLayout >> soilRecursiveHash: anObject with: aSet [
 	| hash |
 	(aSet includes: anObject) ifTrue: [ ^ 0 ].
 	aSet add: anObject.
 
 	hash := self basicIdentityHash.
-	1 to: anObject size do: [ :n |
+	1 to: anObject basicSize do: [ :n |
 		hash := hash bitXor: ((anObject at: n) basicIdentityHash) + n ].
 	^ hash
 ]
