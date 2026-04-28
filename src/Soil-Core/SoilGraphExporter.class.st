@@ -66,7 +66,13 @@ SoilGraphExporter >> export [
 { #category : #'as yet unclassified' }
 SoilGraphExporter >> export: aSoilObjectId [ 
 	self processObjectId: aSoilObjectId.
-	self processLoop 
+	self processLoop
+]
+
+{ #category : #'as yet unclassified' }
+SoilGraphExporter >> exportOn: aStream [ 
+	stream := aStream.
+	self export
 ]
 
 { #category : #initialization }
@@ -249,7 +255,7 @@ SoilGraphExporter >> visitSkipListDictionary: aSkipListDictionary [
 			stream nextPutAll: (0 asByteArrayOfSize: 8) ]
 		ifFalse: [ 
 			count := 0.
-			stream nextPutAll: (index size asByteArrayOfSize: 8).
+			stream nextPutAll: (index values size asByteArrayOfSize: 8).
 			index newIterator associationsDo: [ :assoc |
 				count := count + 1.
 				self processObjectId: (SoilObjectId readFrom: assoc value readStream).
