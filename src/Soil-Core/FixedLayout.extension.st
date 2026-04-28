@@ -5,7 +5,7 @@ FixedLayout >> soilRecursiveHash: anObject with: aSet [
 	| hash transient |
 	(aSet includes: anObject) ifTrue: [ ^ 0 ].
 	aSet add: anObject.
-	hash := self basicIdentityHash.
+	hash := anObject basicIdentityHash.
 	host hasSoilTransientInstVars 
 		ifTrue: [  
 			transient := host soilTransientInstVars.

@@ -6,7 +6,7 @@ BitsLayout >> soilRecursiveHash: anObject with: aSet [
 	(aSet includes: anObject) ifTrue: [ ^ 0 ].
 	aSet add: anObject.
 
-	hash := self basicIdentityHash.
+	hash := anObject basicIdentityHash.
 	1 to: anObject basicSize do: [ :n |
 		hash := hash bitXor: ((anObject at: n) basicIdentityHash) + n ].
 	^ hash
