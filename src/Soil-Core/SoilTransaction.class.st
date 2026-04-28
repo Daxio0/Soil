@@ -404,10 +404,10 @@ SoilTransaction >> markDirty: anObject [
 	| record |
 	readOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call markDirty: on a read-only transaction' ].
 	"look up the non-proxy object in the local cache"
-	record := objectMap 
+	"record := objectMap 
 		at: anObject theNonSoilProxy
 		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
-	record beChanged. 
+	record beChanged. "
 	
 ]
 
