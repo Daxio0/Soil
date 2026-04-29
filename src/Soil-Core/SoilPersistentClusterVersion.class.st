@@ -124,7 +124,7 @@ SoilPersistentClusterVersion >> resetBytes [
 
 { #category : #asserting }
 SoilPersistentClusterVersion >> shouldBeCommitted [ 
-	^ committed not and: [ 
+	^ (changed and: [ committed not ]) or: [ 
 		object soilRecursiveHash ~= fingerprint ]
 ]
 

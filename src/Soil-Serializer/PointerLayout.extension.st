@@ -23,6 +23,9 @@ PointerLayout >> updateIvars: aBehaviorDescription with: materializer for: objec
 					(class slotNamed: instVar) write: materializer nextSoilObject to: object ]]]
 		ifFalse: [
 			| versions |
+			"this notification of a non up-to-date behaviordescription needs to 
+			crafted in a way that reading transaction do not auto update objects."
+			materializer behaviorDescriptionIsNotCurrent: aBehaviorDescription.
 			versions := materializer behaviorVersionsUpTo: aBehaviorDescription.
 			versions last instVarNames do: [ :instVar | 
 				(versions allSatisfy: [ :version | version instVarNames includes: instVar ]) 
