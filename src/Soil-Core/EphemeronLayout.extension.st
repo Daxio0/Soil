@@ -5,7 +5,7 @@ EphemeronLayout >> soilRecursiveHash: anObject with: aSet [
 	| hash transient slots |
 	(aSet includes: anObject) ifTrue: [ ^ 0 ].
 	aSet add: anObject.
-	hash := anObject basicIdentityHash.
+	hash := anObject basicIdentityHash bitXor: slotScope basicIdentityHash.
 	slots := self allSlots.
 	host hasSoilTransientInstVars 
 		ifTrue: [  
