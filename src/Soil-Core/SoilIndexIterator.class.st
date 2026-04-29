@@ -535,9 +535,7 @@ SoilIndexIterator >> removeKey: key value: value ifAbsent: aBlock [
 	self flag: #todo.
 	"this is a hack to be able to find the first occurrence but in a 
 	very inefficient way"
-	currentPageIndex := index hasUniqueKeys 
-		ifTrue: [ currentPage itemIndexForKey: indexKey ] 
-		ifFalse: [ currentPage itemIndexForKey: indexKey value: value ]. 
+	currentPageIndex := currentPage itemIndexForKey: indexKey value: value. 
 	currentKey := (currentPage items at: currentPageIndex ifAbsent: [ ^ aBlock value ]) key. 
 	
 	item :=  self restoreItem: (currentPage itemAtIndex: currentPageIndex).
