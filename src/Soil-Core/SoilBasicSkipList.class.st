@@ -44,9 +44,7 @@ SoilBasicSkipList >> basicRemoveKey: key value: aValue ifAbsent: aBlock [
 		find: key;
 		currentPage.
 	
-	keyIndex := self hasUniqueKeys 
-		ifTrue: [ page itemIndexForKey: key ] 
-		ifFalse: [ page itemIndexForKey: key value: aValue ]. 
+	keyIndex := page itemIndexForKey: key value: aValue. 
 
 	
 	^ keyIndex > 0
