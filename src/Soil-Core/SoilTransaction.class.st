@@ -401,7 +401,6 @@ SoilTransaction >> makeRoot: anObject [
 
 { #category : #public }
 SoilTransaction >> markDirty: anObject [
-	| record |
 	readOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call markDirty: on a read-only transaction' ].
 	"look up the non-proxy object in the local cache"
 	"record := objectMap 
