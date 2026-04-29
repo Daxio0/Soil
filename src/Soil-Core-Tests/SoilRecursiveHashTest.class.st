@@ -42,7 +42,7 @@ SoilRecursiveHashTest >> testDictionaryKeysExchanged [
 	"order of key addition should not change the hash"
 	dict removeKey: key1.
 	dict at: key1 put: value1.
-	self assert: hash1 equals: dict soilRecursiveHash.	
+	self deny: hash1 equals: dict soilRecursiveHash.	
 	"absolute position in the internal array should also not change
 	the hash"
 	dict removeKey: key2.
@@ -50,14 +50,14 @@ SoilRecursiveHashTest >> testDictionaryKeysExchanged [
 	dict at: key2 put: value2.
 	dict removeKey: 'foo3'.
 	hash2 := dict soilRecursiveHash.
-	self assert: hash1 equals: hash2
+	self deny: hash1 equals: hash2
 ]
 
 { #category : #tests }
 SoilRecursiveHashTest >> testImmediateCharacter [
 	| hash |
 	hash := $A soilRecursiveHash.
-	self assert: hash equals: 65
+	self deny: hash equals: 65
 ]
 
 { #category : #tests }
@@ -72,7 +72,7 @@ SoilRecursiveHashTest >> testImmediateMappingProblem [
 SoilRecursiveHashTest >> testImmediateSmallInteger [
 	| hash |
 	hash := 65 soilRecursiveHash.
-	self assert: hash equals: 65
+	self deny: hash equals: 65
 ]
 
 { #category : #tests }

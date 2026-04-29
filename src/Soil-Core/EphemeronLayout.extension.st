@@ -13,12 +13,12 @@ EphemeronLayout >> soilRecursiveHash: anObject with: aSet [
 			1 to: slots size do: [ :n | | slot |
 				slot := slots at: n.
 				(transient includes: slot name) ifFalse: [  
-				hash := hash bitXor: ((slot read: anObject) soilRecursiveHashWith: aSet) + n ] ].
+				hash := hash bitXor: ((slot read: anObject) soilRecursiveHashWith: aSet) * n ] ].
 			^ hash ]
 		ifFalse: [ 
 			1 to: slots size do: [ :n | | slot |
 				slot := slots at: n. 
-				hash := hash bitXor: ((slot read: anObject) soilRecursiveHashWith: aSet) + n ].
+				hash := hash bitXor: ((slot read: anObject) soilRecursiveHashWith: aSet) * n ].
 			^ hash ]
 
 ]
