@@ -486,9 +486,7 @@ SoilMigrationTest >> testSerializingObjectWithChangedShapeAfterReading [
 		addSlot: #three asSlot.
 	h2 := migrationClass classLayout slotScope identityHash.
 	self deny: h1 equals: h2.
-	self halt.
 	tx2 commit.
-	self halt.
 	tx3 := soil newTransaction.
 	materializedRoot := tx3 root.
 	self assert: (materializedRoot instVarNamed: #one) equals: 1.
