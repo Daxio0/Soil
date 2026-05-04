@@ -73,12 +73,11 @@ SoilObjectSegment >> at: index version: version [
 
 { #category : #accessing }
 SoilObjectSegment >> basicAt: anInteger [ 
-	| position |
-	position := indexFile positionAt: anInteger.
-	position == 0 ifTrue: [  SoilIndexOutOfRange signal: 'no entry for object at ', id asString, ':', anInteger asString ].
-	^ (objectFile atPosition: position) ifNotNil: [ :record | 
-		record objectId: (SoilObjectId segment: id index: anInteger).
-		record ]
+	^ self 
+		basicAt: anInteger 
+		ifAbsent: [  
+			SoilIndexOutOfRange signal: 'no entry for object at ', id asString, ':', anInteger asString ].
+	
 ]
 
 { #category : #accessing }
