@@ -81,11 +81,12 @@ SoilSerializer >> nextPutCompiledMethod: aCompiledMethod [
 		nextPutByte: TypeCodeCompiledMethod;
 		nextPutInteger: aCompiledMethod header;
 		nextPutLengthEncodedInteger: bytecodesPlusTrailerSize.
-	"literals"
-	"for now we do store the class pointer in the last literal"
+	"we store all literals"
+	"LiteralVariable (and subclasses) do not store the value, we will re-lookup by name (or create an Undeclared) on materialization.
+	The classBinding (last literal) is a GlobalVariable, too"
 	1 to: aCompiledMethod numLiterals do: [ :i | 
 		(aCompiledMethod literalAt: i) soilSerialize: self ].
-	"variable part"
+	"variable part, we do *not* store the sourcePointer for now"
 	self nextPutBytesFrom: aCompiledMethod bytecodes
 	
 ]
