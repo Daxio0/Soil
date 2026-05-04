@@ -7,9 +7,9 @@ VariableLayout >> soilRecursiveHash: anObject with: aSet [
 	aSet add: anObject.
 
 	hash := anObject basicIdentityHash.
-	1 to: anObject size do: [ :n |
+	1 to: anObject size do: [ :idx |
 		"bitXor: all elements. Take the position in the collection into account in
 		order to detect if elements change position in the collection"
-		hash := hash bitXor: ((anObject at: n) soilRecursiveHashWith: aSet) * n ].
+		hash := hash bitXor: ((anObject at: idx) soilRecursiveHashWith: aSet) * idx ].
 	^ hash 
 ]
