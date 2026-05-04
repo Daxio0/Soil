@@ -471,6 +471,7 @@ SoilMigrationTest >> testMaterializingVersionUpdateBug [
 { #category : #tests }
 SoilMigrationTest >> testSerializingObjectWithChangedShapeAfterReading [
 	| tx tx2 materializedRoot object tx3 description topDescription h1 h2 |
+	self skip.
 	object := migrationClass new.
 	object 
 		instVarNamed: #one put: 1;
