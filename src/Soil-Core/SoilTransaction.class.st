@@ -14,7 +14,7 @@ Class {
 		'journal',
 		'createdAt',
 		'indexUpdatesToCommit',
-		'readOnly'
+		'commitStrategy'
 	],
 	#category : #'Soil-Core-Model'
 }
@@ -128,8 +128,24 @@ SoilTransaction >> basicCommit [
 ]
 
 { #category : #'public accessing' }
+SoilTransaction >> beAutomaticWriteTracking [
+	commitStrategy := SoilAutomaticWriteTracking new
+		transaction: self;
+		yourself 
+]
+
+{ #category : #'public accessing' }
+SoilTransaction >> beManualWriteTracking [
+	commitStrategy := SoilManualWriteTracking new
+		transaction: self;
+		yourself 
+]
+
+{ #category : #'public accessing' }
 SoilTransaction >> beReadOnly [ 
-	readOnly := true
+	commitStrategy := SoilNoWritesCommitStrategy new
+		transaction: self;
+		yourself 
 ]
 
 { #category : #public }
@@ -326,7 +342,7 @@ SoilTransaction >> initialize [
 	behaviorDescriptions := Dictionary new.
 	locks := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
-	readOnly := false
+	self beManualWriteTracking 
 ]
 
 { #category : #api }
@@ -358,7 +374,7 @@ SoilTransaction >> isPersistent: anObject [
 
 { #category : #testing }
 SoilTransaction >> isReadOnly [ 
-	^ readOnly 
+	^ commitStrategy isReadOnly 
 ]
 
 { #category : #testing }
@@ -392,7 +408,7 @@ SoilTransaction >> makeNewVersion: classDescription [
 { #category : #api }
 SoilTransaction >> makeRoot: anObject [ 
 	| objectId |
-	readOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call makeRoot: on a read-only transaction' ].
+	self isReadOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call makeRoot: on a read-only transaction' ].
 	objectId := self addClusterObject: anObject theNonSoilProxy.
 	anObject soilClusterRootIn: self.
 	^ objectId
@@ -401,14 +417,7 @@ SoilTransaction >> makeRoot: anObject [
 
 { #category : #public }
 SoilTransaction >> markDirty: anObject [
-	| record |
-	readOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call markDirty: on a read-only transaction' ].
-	"look up the non-proxy object in the local cache"
-	record := objectMap 
-		at: anObject theNonSoilProxy
-		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
-	record beChanged. 
-	
+	commitStrategy markDirty: anObject 
 ]
 
 { #category : #api }
@@ -488,6 +497,11 @@ SoilTransaction >> objectIdOf: anObject [
 
 { #category : #accessing }
 SoilTransaction >> objectIndex [
+	^ objectMap
+]
+
+{ #category : #accessing }
+SoilTransaction >> objectMap [
 	^ objectMap
 ]
 
