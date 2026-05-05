@@ -5,18 +5,15 @@ Class {
 		'objects',
 		'transaction',
 		'externalObjectRegistry',
-		'soil'
+		'soil',
+		'needsMigration'
 	],
 	#category : #'Soil-Serializer-Serializer/Materializer'
 }
 
 { #category : #'as yet unclassified' }
 SoilMaterializer >> behaviorDescriptionIsNotCurrent: aSoilBehaviorDescription [ 
-	self flag: #beforeMerge.
-	"for now auto safe records with non up-to-date behavior descriptions.
-	This conflicts with read-only transactions. Just now for the sake of 
-	fixing the recursive hash issues"
-	"transaction  addObjectToBeCommited: aSoilBehaviorDescription "
+	needsMigration := true
 ]
 
 { #category : #public }
@@ -39,6 +36,11 @@ SoilMaterializer >> indexAt: indexId [
 SoilMaterializer >> initialize [ 
 	super initialize.
 	objects := OrderedCollection new
+]
+
+{ #category : #accessing }
+SoilMaterializer >> needsMigration [ 
+	^ needsMigration 
 ]
 
 { #category : #'instance creation' }
