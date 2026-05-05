@@ -16,7 +16,7 @@ SoilMaterializer >> behaviorDescriptionIsNotCurrent: aSoilBehaviorDescription [
 	"for now auto safe records with non up-to-date behavior descriptions.
 	This conflicts with read-only transactions. Just now for the sake of 
 	fixing the recursive hash issues"
-	externalObjectRegistry beChanged 
+	"transaction  addObjectToBeCommited: aSoilBehaviorDescription "
 ]
 
 { #category : #public }
