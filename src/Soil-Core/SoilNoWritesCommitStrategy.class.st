@@ -14,3 +14,8 @@ SoilNoWritesCommitStrategy >> markDirty: anObject [
 	SoilTransactionIsReadOnly signal: 'attempt to call markDirty: on a read-only transaction'
 
 ]
+
+{ #category : #'as yet unclassified' }
+SoilNoWritesCommitStrategy >> prepareCommit [ 
+	
+]

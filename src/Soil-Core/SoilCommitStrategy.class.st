@@ -17,6 +17,11 @@ SoilCommitStrategy >> markDirty: anObject [
 	self subclassResponsibility 
 ]
 
+{ #category : #'as yet unclassified' }
+SoilCommitStrategy >> prepareCommit [ 
+	self subclassResponsibility 
+]
+
 { #category : #accessing }
 SoilCommitStrategy >> transaction [
 

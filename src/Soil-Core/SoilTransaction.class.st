@@ -352,7 +352,7 @@ SoilTransaction >> initialize [
 	locks := OrderedCollection new.
 	recordsToCommit := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
-	self beManualWriteTracking 
+	self beAutomaticWriteTracking 
 ]
 
 { #category : #api }
@@ -541,6 +541,7 @@ SoilTransaction >> objectWithId: objectId [
 
 { #category : #accessing }
 SoilTransaction >> prepareRecordsForCommit [
+	commitStrategy prepareCommit.
 	"serialize initial records. While serializing there can be new records 
 	popping up (an object not registered yet in the transaction but is a
 	cluster root"

@@ -13,3 +13,8 @@ SoilManualWriteTracking >> isReadOnly [
 SoilManualWriteTracking >> markDirty: anObject [ 
 	transaction addObjectToBeCommited: anObject 
 ]
+
+{ #category : #'as yet unclassified' }
+SoilManualWriteTracking >> prepareCommit [ 
+	
+]

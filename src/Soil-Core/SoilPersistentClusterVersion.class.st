@@ -22,6 +22,11 @@ SoilPersistentClusterVersion >> asNewClusterVersion [
 		previousVersionRecord: self
 ]
 
+{ #category : #testing }
+SoilPersistentClusterVersion >> hasChanged [
+	^ fingerprint ~= object soilRecursiveHash 
+]
+
 { #category : #accessing }
 SoilPersistentClusterVersion >> materializeObject [
 	^ self materializeObjectUsing: self newMaterializer 

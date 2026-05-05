@@ -13,3 +13,10 @@ SoilAutomaticWriteTracking >> isReadOnly [
 SoilAutomaticWriteTracking >> markDirty: anObject [ 
 	"do nothing"
 ]
+
+{ #category : #'as yet unclassified' }
+SoilAutomaticWriteTracking >> prepareCommit [ 
+	transaction objectMap do: [ :each | 
+		each hasChanged ifTrue: [ 
+			transaction addRecordToCommit: each ] ]
+]
