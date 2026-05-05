@@ -426,6 +426,7 @@ SoilTransaction >> makeRoot: anObject [
 
 { #category : #public }
 SoilTransaction >> markDirty: anObject [
+
 	commitStrategy markDirty: anObject 
 ]
 

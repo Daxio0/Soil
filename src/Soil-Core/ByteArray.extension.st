@@ -21,3 +21,8 @@ ByteArray >> isRemoved [
 	thus checking that first speeds up the check by avoiding #asInteger"
 	^ (self at: 2) == 0 and: [self asInteger == 0]
 ]
+
+{ #category : #'*Soil-Core' }
+ByteArray >> soilRecursiveHashWith: aSet [
+	^ self basicIdentityHash
+]

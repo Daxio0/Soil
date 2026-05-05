@@ -134,6 +134,13 @@ SoilObjectProxy >> soilRealObject [
 		object := transaction objectWithId: objectId ]
 ]
 
+{ #category : #'as yet unclassified' }
+SoilObjectProxy >> soilRecursiveHashWith: aSet [ 
+	"proxies are identified by there object id. If proxies are exchanged the 
+	hash should stay the same as it refers to the same object"
+	^ objectId soilRecursiveHashWith: aSet
+]
+
 { #category : #soil }
 SoilObjectProxy >> soilSerialize: aSerializer [ 
 	^ self soilRealObject soilSerialize: aSerializer 

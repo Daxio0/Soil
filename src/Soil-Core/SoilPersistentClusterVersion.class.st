@@ -1,6 +1,9 @@
 Class {
 	#name : #SoilPersistentClusterVersion,
 	#superclass : #SoilClusterRecord,
+	#instVars : [
+		'fingerprint'
+	],
 	#category : #'Soil-Core-Model'
 }
 
@@ -30,6 +33,7 @@ SoilPersistentClusterVersion >> materializeObjectUsing: aMaterializer [
 		stream: bytes readStream;
 		externalObjectRegistry: self;
 		materialize.
+	fingerprint := object soilRecursiveHash. 
 	^ object
 ]
 

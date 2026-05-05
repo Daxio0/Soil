@@ -10,6 +10,15 @@ Class {
 	#category : #'Soil-Serializer-Serializer/Materializer'
 }
 
+{ #category : #'as yet unclassified' }
+SoilMaterializer >> behaviorDescriptionIsNotCurrent: aSoilBehaviorDescription [ 
+	self flag: #beforeMerge.
+	"for now auto safe records with non up-to-date behavior descriptions.
+	This conflicts with read-only transactions. Just now for the sake of 
+	fixing the recursive hash issues"
+	externalObjectRegistry beChanged 
+]
+
 { #category : #public }
 SoilMaterializer >> behaviorVersionsUpTo: aDescription [ 
 	^ transaction behaviorVersionsUpTo: aDescription 

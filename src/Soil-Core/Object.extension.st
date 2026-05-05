@@ -26,6 +26,21 @@ Object >> soilEmit [
 ]
 
 { #category : #'*Soil-Core' }
+Object >> soilRecursiveHash [
+	^ self soilRecursiveHashWith: (IdentitySet new)
+]
+
+{ #category : #'*Soil-Core' }
+Object >> soilRecursiveHashWith: aSet [
+
+	"hash calculations are done with bitXor: and that is commutative. So we 
+	cannot determine two objects that are exchanged in the graph. By including
+	the graph position which is reflected by aSet size we can make the hash 
+	position dependent for each object"
+	^ (self class classLayout soilRecursiveHash: self with: aSet) bitXor: aSet size * 16r01000193 
+]
+
+{ #category : #'*Soil-Core' }
 Object >> soilSizeInMemory [
 	"recursive #sizeInMemory for Soil. 
 	Note: only works for some objects, e.g. SoilPersistentClusterVersion"
