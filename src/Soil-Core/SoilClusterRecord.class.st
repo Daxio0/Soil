@@ -13,7 +13,6 @@ Class {
 		'objectId',
 		'references',
 		'bytes',
-		'committed',
 		'previousVersionPosition',
 		'version',
 		'behaviorDescriptions',
@@ -43,11 +42,6 @@ SoilClusterRecord >> asNewClusterVersion [
 { #category : #'instance creation' }
 SoilClusterRecord >> basicAddReference: reference [
 	references add: reference 
-]
-
-{ #category : #api }
-SoilClusterRecord >> beChanged [
-	^ self subclassResponsibility
 ]
 
 { #category : #accessing }
@@ -80,11 +74,6 @@ SoilClusterRecord >> bytes [
 SoilClusterRecord >> bytes: anObject [
 
 	bytes := anObject
-]
-
-{ #category : #accessing }
-SoilClusterRecord >> committed [ 
-	committed := true
 ]
 
 { #category : #api }
@@ -137,7 +126,6 @@ SoilClusterRecord >> initialize [
 	behaviorDescriptions := OrderedCollection new.
 	references := OrderedCollection new.
 	indexIds := OrderedCollection new.
-	committed := false.
 	previousVersionPosition := 0.
 
 ]
@@ -255,11 +243,6 @@ SoilClusterRecord >> serializeOn: stream [
 	stream 
 		nextPutLengthEncodedInteger: bytes size;
 		nextPutAll: bytes .
-]
-
-{ #category : #testing }
-SoilClusterRecord >> shouldBeCommitted [
-	^ self subclassResponsibility
 ]
 
 { #category : #accessing }

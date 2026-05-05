@@ -69,6 +69,21 @@ SoilTransaction >> addLock: aLock [
 	locks add: aLock
 ]
 
+{ #category : #adding }
+SoilTransaction >> addObjectToBeCommited: anObject [ 
+	| record |
+	record := objectMap 
+		at: anObject theNonSoilProxy
+		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
+	self addRecordToCommit: record 
+]
+
+{ #category : #adding }
+SoilTransaction >> addRecordToCommit: record [ 
+	(recordsToCommit includes: record) ifFalse: [  
+		recordsToCommit add: record ]
+]
+
 { #category : #accessing }
 SoilTransaction >> atObjectId: objectId putObject: anObject [
 	| record |
@@ -78,7 +93,7 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 		transaction: self.
 	idMap at: objectId put: record.
 	objectMap at: anObject put: record.
-	recordsToCommit ifNotNil: [ recordsToCommit add: record ]
+	self addRecordToCommit: record
 ]
 
 { #category : #aborting }
@@ -230,8 +245,7 @@ SoilTransaction >> buildJournal [
 	"create entries for all new objects and new object versions"
 	recordsToCommit do: [ :record |
 		record version: writeVersion.
-		journal addEntries: record asJournalEntry.
-		record committed  ].
+		journal addEntries: record asJournalEntry ].
 	"for all new objects with a new behavior we create an entry to
 	add the behavior"
 	behaviorDescriptions do: [ :description |
@@ -275,7 +289,7 @@ SoilTransaction >> continue [
 		persistentRecord := record asPersistentClusterVersion.
 		objectMap at: record object put: persistentRecord.
 		idMap at: record objectId put: persistentRecord ].
-	recordsToCommit := nil.
+	recordsToCommit := OrderedCollection new.
 	self flag: #todo.
 	"we change the readVersion here so we can read back the 
 	objects we've just changed. But we do not check if all the
@@ -292,11 +306,6 @@ SoilTransaction >> continue [
 { #category : #accessing }
 SoilTransaction >> database [
 	^ soil
-]
-
-{ #category : #aborting }
-SoilTransaction >> dirtyObjects [
-	^ idMap select: [ :each | each hasChanged ] thenCollect: #object
 ]
 
 { #category : #'api - debugging' }
@@ -341,6 +350,7 @@ SoilTransaction >> initialize [
 	objectMap := IdentityDictionary new.
 	behaviorDescriptions := Dictionary new.
 	locks := OrderedCollection new.
+	recordsToCommit := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
 	self beManualWriteTracking 
 ]
@@ -401,8 +411,7 @@ SoilTransaction >> lockObjectId: aSOObjectId [
 SoilTransaction >> makeNewVersion: classDescription [
 	| record |
 	record := objectMap at: classDescription.
-	recordsToCommit 
-		add: record asNewClusterVersion
+	self addRecordToCommit: record asNewClusterVersion
 ]
 
 { #category : #api }
@@ -531,11 +540,6 @@ SoilTransaction >> objectWithId: objectId [
 
 { #category : #accessing }
 SoilTransaction >> prepareRecordsForCommit [
-	"select all dirty/new records and convert them to new version records"
-	recordsToCommit := OrderedCollection new.
-	idMap values do: [ :record |
-		record shouldBeCommitted ifTrue: [ 
-			recordsToCommit add: record asNewClusterVersion ] ].
 	"serialize initial records. While serializing there can be new records 
 	popping up (an object not registered yet in the transaction but is a
 	cluster root"
@@ -632,8 +636,10 @@ SoilTransaction >> serializeObjects [
 	index := 1.
 	"process the loop in a way new records that appear while serializing
 	are taken into account"
-	[ index <= recordsToCommit size ] whileTrue: [ 
-		(recordsToCommit at: index) serializeObject.
+	[ index <= recordsToCommit size ] whileTrue: [ | record |
+		record := (recordsToCommit at: index) asNewClusterVersion.
+		recordsToCommit at: index put: record.
+		record serializeObject.
 		index := index + 1 ]
 ]
 

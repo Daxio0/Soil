@@ -8,3 +8,8 @@ Class {
 SoilAutomaticWriteTracking >> isReadOnly [ 
 	^ false 
 ]
+
+{ #category : #public }
+SoilAutomaticWriteTracking >> markDirty: anObject [ 
+	"do nothing"
+]
