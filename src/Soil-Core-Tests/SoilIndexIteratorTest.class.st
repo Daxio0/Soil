@@ -128,6 +128,45 @@ SoilIndexIteratorTest >> testAddingDuplicateKeyAcrossPages [
 	self assertCollection: elements hasSameElements: ids
 ]
 
+{ #category : #'tests - duplicate keys' }
+SoilIndexIteratorTest >> testAddingDuplicateKeyAcrossPagesAndRemoveOverflow [
+	"test that if we overflow, we can remove all overflowed and after still lookup in the index"
+
+	| capacity elements iterator page ids idsInOverFlow |
+	capacity := index headerPage itemCapacity.
+	index allowDuplicateKeys.
+	iterator := index newIterator.
+	ids := OrderedCollection new.
+	1 to: capacity do: [ :n |
+		ids add: n asDummySoilObjectId.
+		iterator at: 1 add: n asDummySoilObjectId ].
+	
+	page := iterator currentPage.
+	
+	idsInOverFlow := OrderedCollection new.
+	1 to: capacity do: [ :n |
+		idsInOverFlow add: (capacity + n) asDummySoilObjectId.
+		iterator at: 1 add: (capacity + n) asDummySoilObjectId ].
+	
+	self deny: page identicalTo: iterator currentPage.
+	self assert: iterator size equals: capacity*2.
+	self assert: index size equals: capacity*2.
+	
+	"now we remove all from the overflow page"
+	idsInOverFlow do: [ :each |
+		 iterator removeKey: 1 value: each
+		 ].
+	
+	"we can override the first"
+	iterator at: 1 add: 1  asDummySoilObjectId.
+	"we can ask for all values and get the one added to the first page"
+	elements := iterator at: 1.
+	self assertCollection: elements hasSameElements: ids.
+	
+	"and remove the first"
+	iterator removeKey: 1 value: 1  asDummySoilObjectId.
+]
+
 { #category : #tests }
 SoilIndexIteratorTest >> testAssociationsDo [
 

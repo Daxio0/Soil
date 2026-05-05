@@ -142,7 +142,7 @@ SoilIndexIterator >> basicPreviousAssociation [
 					currentKey := item2 key. 
 					currentPageIndex := currentPage numberOfItems.
 					item2 ] ] ].
-	Error signal: 'shouldnt happen'
+	Error signal: 'it should not be possible to end up here while trying to find previous association'
 ]
 
 { #category : #private }
@@ -241,6 +241,11 @@ SoilIndexIterator >> findPageFor: indexKey [
 	^ self subclassResponsibility
 ]
 
+{ #category : #private }
+SoilIndexIterator >> findPageFor: indexKey value: anObject [
+	^ self subclassResponsibility
+]
+
 { #category : #accessing }
 SoilIndexIterator >> first [
 	^ self firstAssociation value
@@ -303,24 +308,6 @@ SoilIndexIterator >> isEmpty [
 		"all items might be removed and not restorable"
  		self index firstPage items allSatisfy: [ :each |
  		  	(self restoreItem: each) isNil ]]
-]
-
-{ #category : #private }
-SoilIndexIterator >> itemsAt: key [ 
-	"still need to restore."
-	| assoc items |
-	currentKey := index indexKey: key.
-	self findPageFor: currentKey.
-	currentPageIndex := currentPage indexOfKey: currentKey.
-	assoc := self previousAssociation.
-	[ assoc notNil and: [ assoc key = key ] ] whileTrue: [ 
-		assoc := self previousAssociation ].
-	assoc := self nextAssociation.
-	items := OrderedCollection new.
-	[ assoc notNil and: [ assoc key = key ] ] whileTrue: [ 
-	   items add: assoc.
-	   assoc := self nextAssociation ].
-	^ items 
 ]
 
 { #category : #accessing }
@@ -543,14 +530,12 @@ SoilIndexIterator >> removeKey: key value: value ifAbsent: aBlock [
 	indexKey := index indexKey: key.
 	"We search for the data page for the key to update the value with a removed ID
 	and return the prior value just like #at: would do"
-	self findPageFor: indexKey.
-
+	self findPageFor: indexKey value: value.
+	
 	self flag: #todo.
 	"this is a hack to be able to find the first occurrence but in a 
 	very inefficient way"
-	currentPageIndex := index hasUniqueKeys 
-		ifTrue: [ currentPage itemIndexForKey: indexKey ] 
-		ifFalse: [ currentPage itemIndexForKey: indexKey value: value ]. 
+	currentPageIndex := currentPage itemIndexForKey: indexKey value: value. 
 	currentKey := (currentPage items at: currentPageIndex ifAbsent: [ ^ aBlock value ]) key. 
 	
 	item :=  self restoreItem: (currentPage itemAtIndex: currentPageIndex).
@@ -621,9 +606,4 @@ SoilIndexIterator >> values [
 	self do: [ :each |
 		values add: each ].
 	^ values
-]
-
-{ #category : #enumerating }
-SoilIndexIterator >> valuesAt: key [
-	^ (self itemsAt: key) collect: #value
 ]

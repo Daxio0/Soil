@@ -28,6 +28,14 @@ SoilAbstractBTreeDataPage >> find: aKey with: aBTree [
 
 ]
 
+{ #category : #private }
+SoilAbstractBTreeDataPage >> findItem: anItem with: aBTree [
+	"we found a data page, it is here or in a previous page"
+	^(items includes: anItem)
+		ifTrue: [ self ]
+		ifFalse: [ (self previousPageIn: aBTree) findItem: anItem with: aBTree]
+]
+
 { #category : #utilities }
 SoilAbstractBTreeDataPage >> headerSize [
 	^ super headerSize  
@@ -118,6 +126,11 @@ SoilAbstractBTreeDataPage >> previous: anObject [
 	previous := anObject
 ]
 
+{ #category : #accessing }
+SoilAbstractBTreeDataPage >> previousPageIn: btree [
+	^btree pageAt: previous
+]
+
 { #category : #reading }
 SoilAbstractBTreeDataPage >> readHeaderFrom: aStream [
 	super readHeaderFrom: aStream.
@@ -138,9 +151,7 @@ SoilAbstractBTreeDataPage >> remove: aKey for: aBTree [
 SoilAbstractBTreeDataPage >> removeItem: anItem for: aBTree [
 	"remove and return the item"
 	| return keyIndex | 
-	keyIndex := aBTree hasUniqueKeys 
-		ifTrue: [ self itemIndexForKey: anItem key ] 
-		ifFalse: [ self itemIndexForKey: anItem key value: anItem value ]. 
+	keyIndex := self itemIndexForKey: anItem key value: anItem value. 
 	
 	keyIndex = 0 ifTrue: [ ^nil ]. "nothing found"
 	

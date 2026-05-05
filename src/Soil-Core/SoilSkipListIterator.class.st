@@ -77,6 +77,17 @@ SoilSkipListIterator >> findPageFor: indexKey [
 	^ currentPage 
 ]
 
+{ #category : #private }
+SoilSkipListIterator >> findPageFor: indexKey value: anObject [
+	| page |
+	page := self findPageFor: indexKey.
+	
+	[(page items includes: indexKey->anObject) or: [page isHeaderPage] ] 
+		whileFalse: [ page := page previousPageIn: index].
+	
+	^currentPage := page
+]
+
 { #category : #accessing }
 SoilSkipListIterator >> index: aSoilSkipList [ 
 	super index: aSoilSkipList.

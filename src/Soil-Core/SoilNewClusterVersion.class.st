@@ -57,11 +57,6 @@ SoilNewClusterVersion >> asPersistentClusterVersion [
 ]
 
 { #category : #api }
-SoilNewClusterVersion >> beChanged [
-	"nothing to be done"
-]
-
-{ #category : #api }
 SoilNewClusterVersion >> detachFromSegment [
 	"remove all information that belongs to the segment where the cluster
 	was stored"
@@ -159,11 +154,6 @@ SoilNewClusterVersion >> serializeObject [
 			externalObjectRegistry: self;
 			serialize: object ].
 	^ bytes
-]
-
-{ #category : #testing }
-SoilNewClusterVersion >> shouldBeCommitted [
-	^ true
 ]
 
 { #category : #api }

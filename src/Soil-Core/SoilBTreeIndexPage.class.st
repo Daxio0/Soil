@@ -26,6 +26,15 @@ SoilBTreeIndexPage >> find: aKey with: aBTree [
 	^ page find: aKey with: aBTree
 ]
 
+{ #category : #private }
+SoilBTreeIndexPage >> findItem: anItem with: aBTree [
+	| item page |
+	"we are looking for the first page that has the key, there we will continue linear search"
+	item := self findKey: anItem key.
+	page := aBTree pageAt: item value.
+	^ page findItem: anItem with: aBTree
+]
+
 { #category : #searching }
 SoilBTreeIndexPage >> findKey: aKey [
 	items
