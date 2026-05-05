@@ -1,21 +1,21 @@
 Class {
-	#name : #SoilAutomaticWriteTracking,
-	#superclass : #SoilCommitStrategy,
+	#name : #SoilAutomaticTrackingStrategy,
+	#superclass : #SoilReadWriteStrategy,
 	#category : #'Soil-Core'
 }
 
 { #category : #testing }
-SoilAutomaticWriteTracking >> isReadOnly [ 
+SoilAutomaticTrackingStrategy >> isReadOnly [ 
 	^ false 
 ]
 
 { #category : #public }
-SoilAutomaticWriteTracking >> markDirty: anObject [ 
+SoilAutomaticTrackingStrategy >> markDirty: anObject [ 
 	"do nothing"
 ]
 
 { #category : #'as yet unclassified' }
-SoilAutomaticWriteTracking >> prepareCommit [ 
+SoilAutomaticTrackingStrategy >> prepareCommit [ 
 	transaction objectMap do: [ :each | 
 		each hasChanged ifTrue: [ 
 			transaction addRecordToCommit: each ] ]

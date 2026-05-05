@@ -500,7 +500,7 @@ SoilMigrationTest >> testSerializingObjectWithChangedShapeAfterReading [
 
 { #category : #tests }
 SoilMigrationTest >> testSerializingObjectWithChangedShapeBeforeReading [
-	| tx tx2 materializedRoot object tx3 description topDescription h1 h2 |
+	| tx tx2 materializedRoot object tx3 description topDescription|
 	object := migrationClass new.
 	object 
 		instVarNamed: #one put: 1;
@@ -509,12 +509,10 @@ SoilMigrationTest >> testSerializingObjectWithChangedShapeBeforeReading [
 	tx root: object. 
 	tx commit.
 	tx2 := soil newTransaction.
-	h1 := migrationClass classLayout slotScope identityHash.
+	tx2 commitStrategy beAutoMigrating.
 	migrationClass 
 		removeSlot: (migrationClass slotNamed: #two);
 		addSlot: #three asSlot.
-	h2 := migrationClass classLayout slotScope identityHash.
-	self deny: h1 equals: h2.
 	tx2 markDirty: tx2 root.
 	tx2 commit.
 	

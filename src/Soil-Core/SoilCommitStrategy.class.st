@@ -8,6 +8,11 @@ Class {
 }
 
 { #category : #testing }
+SoilCommitStrategy >> isAutoMigrating [ 
+	self subclassResponsibility 
+]
+
+{ #category : #testing }
 SoilCommitStrategy >> isReadOnly [ 
 	self subclassResponsibility 
 ]

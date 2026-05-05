@@ -142,23 +142,28 @@ SoilTransaction >> basicCommit [
 
 ]
 
+{ #category : #accessing }
+SoilTransaction >> beAutoMigrating [ 
+	commitStrategy beAutoMigrating 
+]
+
 { #category : #'public accessing' }
 SoilTransaction >> beAutomaticWriteTracking [
-	commitStrategy := SoilAutomaticWriteTracking new
+	commitStrategy := SoilAutomaticTrackingStrategy new
 		transaction: self;
 		yourself 
 ]
 
 { #category : #'public accessing' }
 SoilTransaction >> beManualWriteTracking [
-	commitStrategy := SoilManualWriteTracking new
+	commitStrategy := SoilManualTrackingStrategy new
 		transaction: self;
 		yourself 
 ]
 
 { #category : #'public accessing' }
 SoilTransaction >> beReadOnly [ 
-	commitStrategy := SoilNoWritesCommitStrategy new
+	commitStrategy := SoilReadOnlyStrategy new
 		transaction: self;
 		yourself 
 ]
@@ -282,6 +287,11 @@ SoilTransaction >> commitAndContinue [
 	self transactionManager commitAndContinueTransaction: self 
 ]
 
+{ #category : #accessing }
+SoilTransaction >> commitStrategy [
+	^ commitStrategy
+]
+
 { #category : #actions }
 SoilTransaction >> continue [
 	recordsToCommit isEmpty ifTrue: [ ^ self ].
@@ -306,6 +316,11 @@ SoilTransaction >> continue [
 { #category : #accessing }
 SoilTransaction >> database [
 	^ soil
+]
+
+{ #category : #accessing }
+SoilTransaction >> errorOnWriteAttempts [ 
+	commitStrategy errorOnWriteAttempts 
 ]
 
 { #category : #'api - debugging' }
@@ -343,6 +358,11 @@ SoilTransaction >> hasModifications [
 	^ (recordsToCommit notNil and: [ recordsToCommit notEmpty ]) or: [ journal notNil and: [ journal size > 1 ] ]
 ]
 
+{ #category : #accessing }
+SoilTransaction >> ignoreWriteAttempts [ 
+	commitStrategy ignoreWriteAttempts 
+]
+
 { #category : #initialization }
 SoilTransaction >> initialize [ 
 	super initialize.
@@ -375,6 +395,11 @@ SoilTransaction >> initializeObjectId: anObjectId [
 { #category : #testing }
 SoilTransaction >> isAborted [
 	^ soil isNil and:[ idMap isNil and: [objectMap isNil]]
+]
+
+{ #category : #testing }
+SoilTransaction >> isAutoMigrating [
+	^ commitStrategy isAutoMigrating 
 ]
 
 { #category : #testing }
@@ -417,7 +442,10 @@ SoilTransaction >> makeNewVersion: classDescription [
 { #category : #api }
 SoilTransaction >> makeRoot: anObject [ 
 	| objectId |
-	self isReadOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call makeRoot: on a read-only transaction' ].
+	self isReadOnly ifTrue: [ 
+		SoilWriteOnReadOnlyTransaction new 
+			object: anObject;
+			signal ].
 	objectId := self addClusterObject: anObject theNonSoilProxy.
 	anObject soilClusterRootIn: self.
 	^ objectId
@@ -432,10 +460,16 @@ SoilTransaction >> markDirty: anObject [
 
 { #category : #api }
 SoilTransaction >> materializeRecord: record [
-	^ record
+	| materializer |
+	materializer := self newMaterializer.
+	record
 		transaction: self;
-		materializeObject;
-		yourself
+		materializeObjectUsing: materializer.
+	
+	(materializer objectNeedsMigration and: [ self isAutoMigrating ]) 
+		ifTrue: [ self addRecordToCommit: record. ].
+		
+	^ record 
 ]
 
 { #category : #'instance creation' }

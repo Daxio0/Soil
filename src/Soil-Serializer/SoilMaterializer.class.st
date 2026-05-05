@@ -35,7 +35,8 @@ SoilMaterializer >> indexAt: indexId [
 { #category : #initialization }
 SoilMaterializer >> initialize [ 
 	super initialize.
-	objects := OrderedCollection new
+	objects := OrderedCollection new.
+	needsMigration := false
 ]
 
 { #category : #accessing }
@@ -360,6 +361,11 @@ SoilMaterializer >> nextUUID: aClass [
 SoilMaterializer >> nextWideString [
 
 	^ self registerObject: super nextWideString 
+]
+
+{ #category : #'as yet unclassified' }
+SoilMaterializer >> objectNeedsMigration [
+	^ needsMigration 
 ]
 
 { #category : #registry }
