@@ -6,19 +6,24 @@ Class {
 		'transaction',
 		'externalObjectRegistry',
 		'soil',
-		'needsMigration'
+		'includesMigratedObjects'
 	],
 	#category : #'Soil-Serializer-Serializer/Materializer'
 }
 
 { #category : #'as yet unclassified' }
 SoilMaterializer >> behaviorDescriptionIsNotCurrent: aSoilBehaviorDescription [ 
-	needsMigration := true
+	includesMigratedObjects := true
 ]
 
 { #category : #public }
 SoilMaterializer >> behaviorVersionsUpTo: aDescription [ 
 	^ transaction behaviorVersionsUpTo: aDescription 
+]
+
+{ #category : #accessing }
+SoilMaterializer >> clusterCanBeMigrated [ 
+	^ includesMigratedObjects 
 ]
 
 { #category : #accessing }
@@ -36,12 +41,7 @@ SoilMaterializer >> indexAt: indexId [
 SoilMaterializer >> initialize [ 
 	super initialize.
 	objects := OrderedCollection new.
-	needsMigration := false
-]
-
-{ #category : #accessing }
-SoilMaterializer >> needsMigration [ 
-	^ needsMigration 
+	includesMigratedObjects := false
 ]
 
 { #category : #'instance creation' }
@@ -361,11 +361,6 @@ SoilMaterializer >> nextUUID: aClass [
 SoilMaterializer >> nextWideString [
 
 	^ self registerObject: super nextWideString 
-]
-
-{ #category : #'as yet unclassified' }
-SoilMaterializer >> objectNeedsMigration [
-	^ needsMigration 
 ]
 
 { #category : #registry }

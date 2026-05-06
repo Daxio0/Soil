@@ -2,14 +2,20 @@ Class {
 	#name : #SoilCommitStrategy,
 	#superclass : #Object,
 	#instVars : [
-		'transaction'
+		'transaction',
+		'autoMigration'
 	],
 	#category : #'Soil-Core'
 }
 
+{ #category : #'as yet unclassified' }
+SoilCommitStrategy >> beAutoMigrating [
+	autoMigration := true
+]
+
 { #category : #testing }
-SoilCommitStrategy >> isAutoMigrating [ 
-	self subclassResponsibility 
+SoilCommitStrategy >> isAutoMigrating [
+	^ autoMigration 
 ]
 
 { #category : #testing }

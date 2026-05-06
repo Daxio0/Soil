@@ -8,11 +8,6 @@ Class {
 }
 
 { #category : #accessing }
-SoilReadOnlyStrategy >> beAutoMigrating [
-	self error: ' a read-only transaction does not do auto migration'
-]
-
-{ #category : #accessing }
 SoilReadOnlyStrategy >> errorOnWriteAttempts [ 
 	ignoreWriteAttempts := false
 ]
@@ -20,11 +15,6 @@ SoilReadOnlyStrategy >> errorOnWriteAttempts [
 { #category : #accessing }
 SoilReadOnlyStrategy >> ignoreWriteAttempts [ 
 	ignoreWriteAttempts := true
-]
-
-{ #category : #testing }
-SoilReadOnlyStrategy >> isAutoMigrating [
-	^ false
 ]
 
 { #category : #testing }

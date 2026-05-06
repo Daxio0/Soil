@@ -1,16 +1,8 @@
 Class {
 	#name : #SoilReadWriteStrategy,
 	#superclass : #SoilCommitStrategy,
-	#instVars : [
-		'autoMigration'
-	],
 	#category : #'Soil-Core'
 }
-
-{ #category : #'as yet unclassified' }
-SoilReadWriteStrategy >> beAutoMigrating [
-	autoMigration := true
-]
 
 { #category : #accessing }
 SoilReadWriteStrategy >> errorOnWriteAttempts [ 
@@ -26,9 +18,4 @@ SoilReadWriteStrategy >> ignoreWriteAttempts [
 SoilReadWriteStrategy >> initialize [ 
 	super initialize.
 	autoMigration := false
-]
-
-{ #category : #testing }
-SoilReadWriteStrategy >> isAutoMigrating [
-	^ autoMigration 
 ]

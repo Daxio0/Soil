@@ -466,7 +466,7 @@ SoilTransaction >> materializeRecord: record [
 		transaction: self;
 		materializeObjectUsing: materializer.
 	
-	(materializer objectNeedsMigration and: [ self isAutoMigrating ]) 
+	(materializer clusterCanBeMigrated and: [ self isAutoMigrating ]) 
 		ifTrue: [ self addRecordToCommit: record. ].
 		
 	^ record 
