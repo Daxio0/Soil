@@ -14,7 +14,7 @@ Class {
 		'journal',
 		'createdAt',
 		'indexUpdatesToCommit',
-		'readOnly'
+		'commitStrategy'
 	],
 	#category : #'Soil-Core-Model'
 }
@@ -69,6 +69,21 @@ SoilTransaction >> addLock: aLock [
 	locks add: aLock
 ]
 
+{ #category : #adding }
+SoilTransaction >> addObjectToBeCommited: anObject [ 
+	| record |
+	record := objectMap 
+		at: anObject theNonSoilProxy
+		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
+	self addRecordToCommit: record 
+]
+
+{ #category : #adding }
+SoilTransaction >> addRecordToCommit: record [ 
+	(recordsToCommit includes: record) ifFalse: [  
+		recordsToCommit add: record ]
+]
+
 { #category : #accessing }
 SoilTransaction >> atObjectId: objectId putObject: anObject [
 	| record |
@@ -78,7 +93,7 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 		transaction: self.
 	idMap at: objectId put: record.
 	objectMap at: anObject put: record.
-	recordsToCommit ifNotNil: [ recordsToCommit add: record ]
+	self addRecordToCommit: record
 ]
 
 { #category : #aborting }
@@ -127,9 +142,30 @@ SoilTransaction >> basicCommit [
 
 ]
 
+{ #category : #accessing }
+SoilTransaction >> beAutoMigrating [ 
+	commitStrategy beAutoMigrating 
+]
+
+{ #category : #'public accessing' }
+SoilTransaction >> beAutomaticWriteTracking [
+	commitStrategy := SoilAutomaticTrackingStrategy new
+		transaction: self;
+		yourself 
+]
+
+{ #category : #'public accessing' }
+SoilTransaction >> beManualWriteTracking [
+	commitStrategy := SoilManualTrackingStrategy new
+		transaction: self;
+		yourself 
+]
+
 { #category : #'public accessing' }
 SoilTransaction >> beReadOnly [ 
-	readOnly := true
+	commitStrategy := SoilReadOnlyStrategy new
+		transaction: self;
+		yourself 
 ]
 
 { #category : #public }
@@ -214,8 +250,7 @@ SoilTransaction >> buildJournal [
 	"create entries for all new objects and new object versions"
 	recordsToCommit do: [ :record |
 		record version: writeVersion.
-		journal addEntries: record asJournalEntry.
-		record committed  ].
+		journal addEntries: record asJournalEntry ].
 	"for all new objects with a new behavior we create an entry to
 	add the behavior"
 	behaviorDescriptions do: [ :description |
@@ -252,6 +287,11 @@ SoilTransaction >> commitAndContinue [
 	self transactionManager commitAndContinueTransaction: self 
 ]
 
+{ #category : #accessing }
+SoilTransaction >> commitStrategy [
+	^ commitStrategy
+]
+
 { #category : #actions }
 SoilTransaction >> continue [
 	recordsToCommit isEmpty ifTrue: [ ^ self ].
@@ -259,7 +299,7 @@ SoilTransaction >> continue [
 		persistentRecord := record asPersistentClusterVersion.
 		objectMap at: record object put: persistentRecord.
 		idMap at: record objectId put: persistentRecord ].
-	recordsToCommit := nil.
+	recordsToCommit := OrderedCollection new.
 	self flag: #todo.
 	"we change the readVersion here so we can read back the 
 	objects we've just changed. But we do not check if all the
@@ -278,9 +318,9 @@ SoilTransaction >> database [
 	^ soil
 ]
 
-{ #category : #aborting }
-SoilTransaction >> dirtyObjects [
-	^ idMap select: [ :each | each hasChanged ] thenCollect: #object
+{ #category : #accessing }
+SoilTransaction >> errorOnWriteAttempts [ 
+	commitStrategy errorOnWriteAttempts 
 ]
 
 { #category : #'api - debugging' }
@@ -318,6 +358,11 @@ SoilTransaction >> hasModifications [
 	^ (recordsToCommit notNil and: [ recordsToCommit notEmpty ]) or: [ journal notNil and: [ journal size > 1 ] ]
 ]
 
+{ #category : #accessing }
+SoilTransaction >> ignoreWriteAttempts [ 
+	commitStrategy ignoreWriteAttempts 
+]
+
 { #category : #initialization }
 SoilTransaction >> initialize [ 
 	super initialize.
@@ -325,8 +370,9 @@ SoilTransaction >> initialize [
 	objectMap := IdentityDictionary new.
 	behaviorDescriptions := Dictionary new.
 	locks := OrderedCollection new.
+	recordsToCommit := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
-	readOnly := false
+	self beManualWriteTracking 
 ]
 
 { #category : #api }
@@ -352,13 +398,18 @@ SoilTransaction >> isAborted [
 ]
 
 { #category : #testing }
+SoilTransaction >> isAutoMigrating [
+	^ commitStrategy isAutoMigrating 
+]
+
+{ #category : #testing }
 SoilTransaction >> isPersistent: anObject [
 	^ self isRoot: anObject
 ]
 
 { #category : #testing }
 SoilTransaction >> isReadOnly [ 
-	^ readOnly 
+	^ commitStrategy isReadOnly 
 ]
 
 { #category : #testing }
@@ -385,14 +436,16 @@ SoilTransaction >> lockObjectId: aSOObjectId [
 SoilTransaction >> makeNewVersion: classDescription [
 	| record |
 	record := objectMap at: classDescription.
-	recordsToCommit 
-		add: record asNewClusterVersion
+	self addRecordToCommit: record asNewClusterVersion
 ]
 
 { #category : #api }
 SoilTransaction >> makeRoot: anObject [ 
 	| objectId |
-	readOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call makeRoot: on a read-only transaction' ].
+	self isReadOnly ifTrue: [ 
+		SoilWriteOnReadOnlyTransaction new 
+			object: anObject;
+			signal ].
 	objectId := self addClusterObject: anObject theNonSoilProxy.
 	anObject soilClusterRootIn: self.
 	^ objectId
@@ -401,22 +454,23 @@ SoilTransaction >> makeRoot: anObject [
 
 { #category : #public }
 SoilTransaction >> markDirty: anObject [
-	| record |
-	readOnly ifTrue: [ SoilTransactionIsReadOnly signal: 'attempt to call markDirty: on a read-only transaction' ].
-	"look up the non-proxy object in the local cache"
-	record := objectMap 
-		at: anObject theNonSoilProxy
-		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
-	record beChanged. 
-	
+
+	commitStrategy markDirty: anObject 
 ]
 
 { #category : #api }
 SoilTransaction >> materializeRecord: record [
-	^ record
+	| materializer |
+	materializer := self newMaterializer.
+	record
 		transaction: self;
-		materializeObject;
-		yourself
+		materializeObjectUsing: materializer.
+	
+	commitStrategy 
+		recordMaterialized: record 
+		materializer: materializer.
+		
+	^ record 
 ]
 
 { #category : #'instance creation' }
@@ -491,6 +545,11 @@ SoilTransaction >> objectIndex [
 	^ objectMap
 ]
 
+{ #category : #accessing }
+SoilTransaction >> objectMap [
+	^ objectMap
+]
+
 { #category : #api }
 SoilTransaction >> objectRepository [ 
 	^ soil objectRepository
@@ -517,11 +576,7 @@ SoilTransaction >> objectWithId: objectId [
 
 { #category : #accessing }
 SoilTransaction >> prepareRecordsForCommit [
-	"select all dirty/new records and convert them to new version records"
-	recordsToCommit := OrderedCollection new.
-	idMap values do: [ :record |
-		record shouldBeCommitted ifTrue: [ 
-			recordsToCommit add: record asNewClusterVersion ] ].
+	commitStrategy prepareCommit.
 	"serialize initial records. While serializing there can be new records 
 	popping up (an object not registered yet in the transaction but is a
 	cluster root"
@@ -618,8 +673,10 @@ SoilTransaction >> serializeObjects [
 	index := 1.
 	"process the loop in a way new records that appear while serializing
 	are taken into account"
-	[ index <= recordsToCommit size ] whileTrue: [ 
-		(recordsToCommit at: index) serializeObject.
+	[ index <= recordsToCommit size ] whileTrue: [ | record |
+		record := (recordsToCommit at: index) asNewClusterVersion.
+		recordsToCommit at: index put: record.
+		record serializeObject.
 		index := index + 1 ]
 ]
 

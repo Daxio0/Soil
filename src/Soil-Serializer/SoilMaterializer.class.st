@@ -5,14 +5,25 @@ Class {
 		'objects',
 		'transaction',
 		'externalObjectRegistry',
-		'soil'
+		'soil',
+		'includesMigratedObjects'
 	],
 	#category : #'Soil-Serializer-Serializer/Materializer'
 }
 
+{ #category : #'as yet unclassified' }
+SoilMaterializer >> behaviorDescriptionIsNotCurrent: aSoilBehaviorDescription [ 
+	includesMigratedObjects := true
+]
+
 { #category : #public }
 SoilMaterializer >> behaviorVersionsUpTo: aDescription [ 
 	^ transaction behaviorVersionsUpTo: aDescription 
+]
+
+{ #category : #accessing }
+SoilMaterializer >> clusterCanBeMigrated [ 
+	^ includesMigratedObjects 
 ]
 
 { #category : #accessing }
@@ -29,7 +40,8 @@ SoilMaterializer >> indexAt: indexId [
 { #category : #initialization }
 SoilMaterializer >> initialize [ 
 	super initialize.
-	objects := OrderedCollection new
+	objects := OrderedCollection new.
+	includesMigratedObjects := false
 ]
 
 { #category : #'instance creation' }

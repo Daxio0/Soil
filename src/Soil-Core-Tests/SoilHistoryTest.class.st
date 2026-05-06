@@ -36,20 +36,20 @@ SoilHistoryTest >> tearDown [
 
 { #category : #tests }
 SoilHistoryTest >> testObjectIDVersions [
-	| tx id strings |
-	"We store a string and change it two times"
+	| tx id arrays |
+	"We store an array and change it two times"
 	tx := soil newTransaction.
-	tx root: 'String for Testing 1'.
+	tx root: { 1 . 1 . 1 }.
 	tx commit.
 	
 	tx := soil newTransaction.
-	tx root at: 20 put: $2.
+	tx root at: 2 put: 2.
 	tx markDirty: tx root.
 	tx commit.
 	
 		
 	tx := soil newTransaction.
-	tx root at: 20 put: $3.
+	tx root at: 3 put: 3.
 	tx markDirty: tx root.
 	tx commit.
 	
@@ -58,10 +58,10 @@ SoilHistoryTest >> testObjectIDVersions [
 	id := tx objectIdOf: tx root.
 	"and get all versions of this ID from the database
 	API is for now a bit hard to use"
-	strings := (tx objectRepository allVersionsOf: id) collect: [ :each | each materializeObjectUsing: tx newMaterializer].
-	self assert: strings size equals: 3.
+	arrays := (tx objectRepository allVersionsOf: id) collect: [ :each | each materializeObjectUsing: tx newMaterializer].
+	self assert: arrays size equals: 3.
 	"take care, lastest version is first"
-	self assert: strings first equals: 'String for Testing 3'
+	self assert: arrays first equals: { 1 . 2 . 3 }
 ]
 
 { #category : #tests }

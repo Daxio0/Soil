@@ -35,7 +35,7 @@ SoilTransactionTest >> testAddSameObjectIdTwice [
 	tx := SoilTransaction new.
 	tx atObjectId: (SoilObjectId segment: 1 index: 0) putObject: Object new. 
 	tx atObjectId: (SoilObjectId segment: 1 index: 0) putObject: Object new. 
-	self assert: tx dirtyObjects size equals: 2
+	self assert: tx recordsToCommit size equals: 2
 ]
 
 { #category : #tests }
