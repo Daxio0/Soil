@@ -135,12 +135,6 @@ SoilBasicSkipList >> removePage: aPage [
 
 ]
 
-{ #category : #accessing }
-SoilBasicSkipList >> size [ 
-	^ self headerPage size
-	
-]
-
 { #category : #private }
 SoilBasicSkipList >> splitPage: aIterator forKey: aKey [
 	| newPage currentPage previousPage nextPageOffset nextPage |

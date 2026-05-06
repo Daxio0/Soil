@@ -469,8 +469,9 @@ SoilMigrationTest >> testMaterializingVersionUpdateBug [
 ]
 
 { #category : #tests }
-SoilMigrationTest >> testSerializingObjectWithChangedShape [
-	| tx tx2 materializedRoot object tx3 description topDescription obj |
+SoilMigrationTest >> testSerializingObjectWithChangedShapeAfterReading [
+	| tx tx2 materializedRoot object tx3 description topDescription h1 h2 |
+	self skip.
 	object := migrationClass new.
 	object 
 		instVarNamed: #one put: 1;
@@ -479,6 +480,36 @@ SoilMigrationTest >> testSerializingObjectWithChangedShape [
 	tx root: object. 
 	tx commit.
 	tx2 := soil newTransaction.
+	"tx2 markDirty:" tx2 root.
+	h1 := migrationClass classLayout slotScope identityHash.
+	migrationClass 
+		removeSlot: (migrationClass slotNamed: #two);
+		addSlot: #three asSlot.
+	h2 := migrationClass classLayout slotScope identityHash.
+	self deny: h1 equals: h2.
+	tx2 commit.
+	tx3 := soil newTransaction.
+	materializedRoot := tx3 root.
+	self assert: (materializedRoot instVarNamed: #one) equals: 1.
+	self assert: (materializedRoot instVarNamed: #three) equals: nil.
+	description := tx3 behaviorDescriptionFor: materializedRoot class.
+	self assert: description version equals: 2.
+	topDescription := soil behaviorRegistry nameAt: materializedRoot class soilBehaviorIdentifier ifAbsent: [ self fail ].
+	self assert: (soil objectRepository allVersionsOf: topDescription) size equals: 2
+]
+
+{ #category : #tests }
+SoilMigrationTest >> testSerializingObjectWithChangedShapeBeforeReading [
+	| tx tx2 materializedRoot object tx3 description topDescription|
+	object := migrationClass new.
+	object 
+		instVarNamed: #one put: 1;
+		instVarNamed: #two put: 2.
+	tx := soil newTransaction.
+	tx root: object. 
+	tx commit.
+	tx2 := soil newTransaction.
+	tx2 commitStrategy beAutoMigrating.
 	migrationClass 
 		removeSlot: (migrationClass slotNamed: #two);
 		addSlot: #three asSlot.

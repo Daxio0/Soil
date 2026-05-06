@@ -2,7 +2,7 @@ Class {
 	#name : #SoilPersistentClusterVersion,
 	#superclass : #SoilClusterRecord,
 	#instVars : [
-		'changed'
+		'fingerprint'
 	],
 	#category : #'Soil-Core-Model'
 }
@@ -22,26 +22,14 @@ SoilPersistentClusterVersion >> asNewClusterVersion [
 		previousVersionRecord: self
 ]
 
-{ #category : #api }
-SoilPersistentClusterVersion >> beChanged [
-	changed := true
+{ #category : #testing }
+SoilPersistentClusterVersion >> hasChanged [
+	^ fingerprint ~= object soilRecursiveHash 
 ]
 
 { #category : #accessing }
-SoilPersistentClusterVersion >> changed: aBoolean [
-	changed := aBoolean 
-]
-
-{ #category : #testing }
-SoilPersistentClusterVersion >> hasChanged [
-	^ changed 
-]
-
-{ #category : #initialization }
-SoilPersistentClusterVersion >> initialize [ 
-	super initialize.
-	changed := false.
-
+SoilPersistentClusterVersion >> makeFingerprint [
+	fingerprint := object soilRecursiveHash
 ]
 
 { #category : #accessing }
@@ -118,11 +106,6 @@ SoilPersistentClusterVersion >> readFrom: stream [
 { #category : #initialization }
 SoilPersistentClusterVersion >> resetBytes [
 	bytes := nil 
-]
-
-{ #category : #asserting }
-SoilPersistentClusterVersion >> shouldBeCommitted [ 
-	^ changed and: [ committed not ]
 ]
 
 { #category : #comparing }
