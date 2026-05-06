@@ -586,7 +586,12 @@ SoilIndexIterator >> reverseDo: aBlock [
 ]
 
 { #category : #accessing }
-SoilIndexIterator >> size [
+SoilIndexIterator >> size [ 
+	^ index size
+]
+
+{ #category : #accessing }
+SoilIndexIterator >> sizeViaIteration [
 	"We iterate over all elements to get the size. Slow!"
 	| sum |
 	sum := 0.

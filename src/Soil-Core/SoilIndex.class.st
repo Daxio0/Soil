@@ -569,8 +569,7 @@ SoilIndex >> rewriteUsing: aBlock [
 
 { #category : #accessing }
 SoilIndex >> size [
-	"We iterate over all elements to get the size. Slow!"
-	^ self newIterator size 
+	^ self headerPage size
 ]
 
 { #category : #accessing }
