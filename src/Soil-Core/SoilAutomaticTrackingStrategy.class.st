@@ -20,3 +20,9 @@ SoilAutomaticTrackingStrategy >> prepareCommit [
 		each hasChanged ifTrue: [ 
 			transaction addRecordToCommit: each ] ]
 ]
+
+{ #category : #'as yet unclassified' }
+SoilAutomaticTrackingStrategy >> recordMaterialized: record materializer: materializer [
+	super recordMaterialized: record materializer: materializer.
+	record makeFingerprint 
+]

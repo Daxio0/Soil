@@ -33,6 +33,13 @@ SoilCommitStrategy >> prepareCommit [
 	self subclassResponsibility 
 ]
 
+{ #category : #'as yet unclassified' }
+SoilCommitStrategy >> recordMaterialized: record materializer: materializer [
+	(autoMigration and: [ materializer clusterCanBeMigrated ]) 
+		ifTrue: [ transaction addRecordToCommit: record. ].
+
+]
+
 { #category : #accessing }
 SoilCommitStrategy >> transaction [
 

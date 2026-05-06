@@ -28,6 +28,11 @@ SoilPersistentClusterVersion >> hasChanged [
 ]
 
 { #category : #accessing }
+SoilPersistentClusterVersion >> makeFingerprint [
+	fingerprint := object soilRecursiveHash
+]
+
+{ #category : #accessing }
 SoilPersistentClusterVersion >> materializeObject [
 	^ self materializeObjectUsing: self newMaterializer 
 ]
@@ -38,7 +43,6 @@ SoilPersistentClusterVersion >> materializeObjectUsing: aMaterializer [
 		stream: bytes readStream;
 		externalObjectRegistry: self;
 		materialize.
-	fingerprint := object soilRecursiveHash. 
 	^ object
 ]
 
