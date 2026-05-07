@@ -9,7 +9,7 @@ WeakLayout >> soilRecursiveHash: anObject with: aSet [
 	aSet add: anObject.
 
 	hash := anObject basicIdentityHash.
-	1 to: anObject size do: [ :n |
-		hash := hash bitXor: ((anObject at: n) soilRecursiveHashWith: aSet) * n ].
+	1 to: anObject basicSize do: [ :n |
+		hash := hash bitXor: ((anObject basicAt: n) soilRecursiveHashWith: aSet) * n ].
 	^ hash 
 ]
