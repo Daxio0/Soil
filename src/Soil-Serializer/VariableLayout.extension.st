@@ -18,15 +18,14 @@ VariableLayout >> soilBasicMaterialize: aBehaviorDescription with: materializer 
 
 { #category : #'*Soil-Serializer' }
 VariableLayout >> soilBasicSerialize: anObject with: serializer [
-	| description class basicSize|
+	| description basicSize|
 
 	description := serializer serializeBehaviorDescriptionFor: anObject.
-	class := anObject class.
 	basicSize := anObject basicSize.
 
 	serializer nextPutLengthEncodedInteger: basicSize.
-	class hasSoilTransientInstVars 
-		ifFalse: [1 to: class instSize do: [:index | (anObject instVarAt: index)  theNonSoilProxy soilSerialize: serializer] ]
-		ifTrue: [description instVarNames do: [:ivarName | ((class slotNamed: ivarName) read: anObject) theNonSoilProxy soilSerialize: serializer ] ].
+	host hasSoilTransientInstVars 
+		ifFalse: [1 to: host instSize do: [:index | (anObject instVarAt: index)  theNonSoilProxy soilSerialize: serializer] ]
+		ifTrue: [description instVarNames do: [:ivarName | ((host slotNamed: ivarName) read: anObject) theNonSoilProxy soilSerialize: serializer ] ].
 	1 to: basicSize do: [:i | (anObject basicAt: i) soilSerialize: serializer ]
 ]
