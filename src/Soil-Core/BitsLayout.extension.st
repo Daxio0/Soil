@@ -8,6 +8,6 @@ BitsLayout >> soilRecursiveHash: anObject with: aSet [
 
 	hash := anObject basicIdentityHash.
 	1 to: anObject basicSize do: [ :n |
-		hash := hash bitXor: ((anObject at: n) basicIdentityHash) * n ].
+		hash := hash bitXor: ((anObject basicAt: n) basicIdentityHash) * n ].
 	^ hash
 ]
