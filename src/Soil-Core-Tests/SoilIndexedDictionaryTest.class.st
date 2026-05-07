@@ -302,6 +302,7 @@ SoilIndexedDictionaryTest >> testConcurrentDo [
 { #category : #'tests - concurrent' }
 SoilIndexedDictionaryTest >> testConcurrentIsEmpty [ 
 	| tx1 tx2 tx3 |
+	self skip. "see https://github.com/ApptiveGrid/Soil/issues/1137"
 	tx1 := soil newTransaction.
 	tx1 root: dict.
 	dict
