@@ -43,6 +43,23 @@ SoilPersistentDictionaryTest >> testAdd [
 ]
 
 { #category : #tests }
+SoilPersistentDictionaryTest >> testAddValueWithoutBeingRoot [
+
+	| dict transaction root txn2 |
+	transaction := soil newTransaction.
+	root := Dictionary new.
+	transaction root: root.
+	dict := SoilPersistentDictionary new.
+	root at: #dict put: dict.
+	dict add: (#test -> 'string').
+	transaction commit.
+	
+	txn2 := soil newTransaction.	
+	self assert: ((txn2 root at: #dict) at: #test) equals: 'string'.
+	txn2 abort.
+]
+
+{ #category : #tests }
 SoilPersistentDictionaryTest >> testAnyOne [
 
 	| dict transaction |
