@@ -13,6 +13,12 @@ SoilCommitStrategy >> beAutoMigrating [
 	autoMigration := true
 ]
 
+{ #category : #initialization }
+SoilCommitStrategy >> initialize [ 
+	super initialize.
+	autoMigration := false
+]
+
 { #category : #testing }
 SoilCommitStrategy >> isAutoMigrating [
 	^ autoMigration 

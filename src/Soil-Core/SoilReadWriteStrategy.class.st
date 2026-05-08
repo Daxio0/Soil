@@ -13,9 +13,3 @@ SoilReadWriteStrategy >> errorOnWriteAttempts [
 SoilReadWriteStrategy >> ignoreWriteAttempts [
 	self error: 'a read-write transaction does not ignore write attempts'
 ]
-
-{ #category : #initialization }
-SoilReadWriteStrategy >> initialize [ 
-	super initialize.
-	autoMigration := false
-]
