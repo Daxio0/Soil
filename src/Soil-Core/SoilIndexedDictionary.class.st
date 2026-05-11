@@ -282,18 +282,21 @@ SoilIndexedDictionary >> size [
 { #category : #serializing }
 SoilIndexedDictionary >> soilBasicSerialize: aSerializer [
 	super soilBasicSerialize: aSerializer.
-	aSerializer registerIndex: self
+	aSerializer registerIndex: self.
+	self isRegistered ifFalse: [ 
+		transaction 
+			addJournalEntry: (index newIndexEntry 
+				id: id;
+				segment: (transaction objectIdOf: self) segment)
+			head: true ].
+
+
 ]
 
 { #category : #serializing }
 SoilIndexedDictionary >> soilClusterRootIn: aTransaction [
 	transaction ifNotNil: [ ^ self ].
-	transaction := aTransaction.
-	transaction markDirty: self.
-	self isRegistered ifFalse: [ 
-		aTransaction addJournalEntry: (index newIndexEntry 
-			id: id;
-			segment: (aTransaction objectIdOf: self) segment) ]
+	transaction := aTransaction
 ]
 
 { #category : #serializing }

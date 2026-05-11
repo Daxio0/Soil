@@ -61,7 +61,14 @@ SoilTransaction >> addIndexUpdate: anIndex [
 
 { #category : #adding }
 SoilTransaction >> addJournalEntry: anEntry [ 
-	self journal addEntry: anEntry 
+	self addJournalEntry: anEntry head: false
+]
+
+{ #category : #adding }
+SoilTransaction >> addJournalEntry: anEntry head: aBoolean [
+	aBoolean 
+		ifTrue: [ self journal addEntryToHead: anEntry  ]
+		ifFalse: [ self journal addEntryToTail: anEntry ]
 ]
 
 { #category : #adding }

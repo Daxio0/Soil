@@ -32,6 +32,17 @@ SoilTransactionJournal >> addEntries: aCollection [
 
 { #category : #adding }
 SoilTransactionJournal >> addEntry: aJournalEntry [
+	self addEntryToTail: aJournalEntry 
+]
+
+{ #category : #adding }
+SoilTransactionJournal >> addEntryToHead: aJournalEntry [
+	aJournalEntry journal: self.
+	entries add: aJournalEntry after: entries first
+]
+
+{ #category : #adding }
+SoilTransactionJournal >> addEntryToTail: aJournalEntry [
 	aJournalEntry journal: self.
 	entries add: aJournalEntry 
 ]
