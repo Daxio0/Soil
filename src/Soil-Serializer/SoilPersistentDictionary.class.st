@@ -41,10 +41,10 @@ SoilPersistentDictionary class >> soilTransientInstVars [
 
 { #category : #forwarded }
 SoilPersistentDictionary >> add: anAssociation [
-	transaction makeRoot: anAssociation value.
-	dict add: anAssociation.
-	transaction markDirty: self.
-	^anAssociation
+	self 
+		at: anAssociation key 
+		put: anAssociation value.
+	^ anAssociation 
 ]
 
 { #category : #forwarded }
@@ -82,7 +82,6 @@ SoilPersistentDictionary >> at: key ifPresent: aPresentBlock ifAbsent: anAbsentB
 SoilPersistentDictionary >> at: key put: value [
 	transaction ifNotNil: [:tr | tr makeRoot: value].
 	dict at: key put: value.
-	transaction ifNotNil: [:tr | tr markDirty: self].
 	^value
 
 ]
@@ -97,6 +96,14 @@ SoilPersistentDictionary >> detect: detectBlock ifNone: noneBlock [
 	^ dict values
 		detect: detectBlock 
 		ifNone: noneBlock 
+]
+
+{ #category : #initialization }
+SoilPersistentDictionary >> ensureValuesAreRoot [
+	dict do: [:each | 
+		each isImmediateObject ifFalse: [
+			transaction makeRoot: each ] ]
+
 ]
 
 { #category : #forwarded }
@@ -143,10 +150,10 @@ SoilPersistentDictionary >> removeKey: key [
 
 { #category : #forwarded }
 SoilPersistentDictionary >> removeKey: anObject ifAbsent: aBlock [
-	| return |
-	return := dict removeKey: anObject ifAbsent: aBlock.
-	transaction markDirty: self.
-	^return
+	^ dict 
+		removeKey: anObject 
+		ifAbsent: aBlock.
+
 ]
 
 { #category : #forwarded }
@@ -155,9 +162,11 @@ SoilPersistentDictionary >> size [
 ]
 
 { #category : #serialization }
-SoilPersistentDictionary >> soilBasicSerialize: serializer [
-	self class == SoilPersistentDictionary ifFalse: [ ^ super soilBasicSerialize: serializer ].
-	serializer nextPutPersistentDictionary: self
+SoilPersistentDictionary >> soilBasicSerialize: aSerializer [ 
+	transaction ifNil: [
+		transaction := aSerializer transaction.
+		self ensureValuesAreRoot ].
+	super soilBasicSerialize: aSerializer 
 ]
 
 { #category : #initialization }
@@ -165,13 +174,12 @@ SoilPersistentDictionary >> soilClusterRootIn: aTransaction [
 	(transaction isNil or: [ transaction == aTransaction ])
 		ifFalse: [self error: 'Object is already persistent in another transaction'].
 	transaction := aTransaction.
-	dict do: [:each | each isImmediateObject ifFalse: [transaction makeRoot: each]].
-
+	self ensureValuesAreRoot
 ]
 
 { #category : #serialization }
-SoilPersistentDictionary >> soilLoadedIn: aSOTransaction [
-	transaction := aSOTransaction 
+SoilPersistentDictionary >> soilLoadedIn: aTransaction [
+	transaction := aTransaction 
 ]
 
 { #category : #forwarded }

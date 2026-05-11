@@ -372,7 +372,7 @@ SoilTransaction >> initialize [
 	locks := OrderedCollection new.
 	recordsToCommit := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
-	self beManualWriteTracking 
+	self beAutomaticWriteTracking 
 ]
 
 { #category : #api }
