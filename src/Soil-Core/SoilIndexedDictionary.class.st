@@ -315,6 +315,11 @@ SoilIndexedDictionary >> soilMaterialized: aMaterializer [
 ]
 
 { #category : #accessing }
+SoilIndexedDictionary >> transaction: aTransaction [ 
+	transaction := aTransaction 
+]
+
+{ #category : #accessing }
 SoilIndexedDictionary >> values [
 	^ self newIterator values
 ]
