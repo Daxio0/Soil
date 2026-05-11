@@ -182,6 +182,12 @@ SoilPersistentDictionary >> soilLoadedIn: aTransaction [
 	transaction := aTransaction 
 ]
 
+{ #category : #accessing }
+SoilPersistentDictionary >> transaction: aTransaction [ 
+	
+	transaction := aTransaction 
+]
+
 { #category : #forwarded }
 SoilPersistentDictionary >> values [
 	^ dict values
