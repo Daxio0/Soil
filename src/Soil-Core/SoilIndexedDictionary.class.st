@@ -49,6 +49,15 @@ SoilIndexedDictionary >> at: key ifAbsent: aBlock [
 ]
 
 { #category : #accessing }
+SoilIndexedDictionary >> at: key ifAbsentPut: aBlock [
+
+	^ self at: key ifAbsent: [ |value|
+		value := aBlock value.
+		self at: key put: value.
+		value ]
+]
+
+{ #category : #accessing }
 SoilIndexedDictionary >> at: key put: anObject [
 
 	| objectId oldValue |

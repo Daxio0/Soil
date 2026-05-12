@@ -235,6 +235,16 @@ SoilIndexedDictionaryTest >> testAtIfAbsent [
 ]
 
 { #category : #tests }
+SoilIndexedDictionaryTest >> testAtIfAbsentPut [
+	| tx |
+	tx := soil newTransaction.
+	tx root: dict.
+	self assert: (dict at: 1 ifAbsentPut: [ 'testValue' ]) equals: 'testValue'.
+	self assert: (dict at: 1) equals: 'testValue'.
+	tx commit.
+]
+
+{ #category : #tests }
 SoilIndexedDictionaryTest >> testAtIndexWithTransaction [
 	| tx tx2 |
 	tx := soil newTransaction.
