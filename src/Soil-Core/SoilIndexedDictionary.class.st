@@ -143,8 +143,8 @@ SoilIndexedDictionary >> isEmpty [
 ]
 
 { #category : #testing }
-SoilIndexedDictionary >> isRegistered [
-	^ index isRegistered 
+SoilIndexedDictionary >> isPresentOnDisk [
+	^ index isPresentOnDisk 
 ]
 
 { #category : #accessing }
@@ -283,7 +283,7 @@ SoilIndexedDictionary >> size [
 SoilIndexedDictionary >> soilBasicSerialize: aSerializer [
 	super soilBasicSerialize: aSerializer.
 	aSerializer registerIndex: self.
-	self isRegistered ifFalse: [ 
+	self isPresentOnDisk ifFalse: [ 
 		transaction 
 			addJournalEntry: (index newIndexEntry 
 				id: id;

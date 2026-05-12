@@ -21,7 +21,7 @@ SoilBTree >> destroy [
 ]
 
 { #category : #testing }
-SoilBTree >> isRegistered [
+SoilBTree >> isPresentOnDisk [
 	^ path notNil
 ]
 

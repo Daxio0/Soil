@@ -303,7 +303,7 @@ SoilIndex >> isOpen [
 ]
 
 { #category : #testing }
-SoilIndex >> isRegistered [
+SoilIndex >> isPresentOnDisk [
 	^ self subclassResponsibility
 ]
 

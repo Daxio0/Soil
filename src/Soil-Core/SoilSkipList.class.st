@@ -62,7 +62,7 @@ SoilSkipList >> initializeParametersFrom: aSoilSkipList [
 ]
 
 { #category : #testing }
-SoilSkipList >> isRegistered [
+SoilSkipList >> isPresentOnDisk [
 	^ path notNil
 ]
 
