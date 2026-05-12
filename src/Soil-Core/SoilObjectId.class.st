@@ -187,6 +187,11 @@ SoilObjectId >> setIndex: anInteger [
 	index := anInteger 
 ]
 
+{ #category : #'as yet unclassified' }
+SoilObjectId >> soilRecursiveHashWith: aSet [ 
+	^ (segment soilRecursiveHashWith: aSet) bitXor: (index soilRecursiveHashWith: aSet)
+]
+
 { #category : #comparing }
 SoilObjectId >> soilSizeInMemory [
 	"recursive #sizeInMemory for Soil. 
