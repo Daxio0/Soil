@@ -328,6 +328,35 @@ SoilIndexedDictionaryTest >> testConcurrentIsEmpty [
 	self assert: tx2 root size equals: 1
 ]
 
+{ #category : #tests }
+SoilIndexedDictionaryTest >> testConcurrentKeysAndValuesDo [
+	| tx1 tx2 tx3 colValue colKey |
+	tx1 := soil newTransaction.
+	tx1 root: dict.
+	dict
+		at: #one put: #onevalue;
+		at: #two put: #twovalue;
+		at: #three put: #threevalue;
+		at: #four put: #fourvalue.
+	tx1 commit.
+	tx2 := soil newTransaction.
+	"After creating tx2 we open a concurrent transaction and add a key to 
+	the dictionary which should be invisible to tx2"
+	tx3 := soil newTransaction.
+	tx3 root
+		at: #five put: #fivevalue.
+	tx3 commit.
+	colValue := OrderedCollection new.
+	colKey := OrderedCollection new.
+	tx2 root keysAndValuesDo: [ :key :value |
+		colValue add: value.
+		colKey add: key asByteArray asString].
+	self assert: colValue size equals: 4.
+	self assert: (colValue noneSatisfy: [:value | value = #fiveValue ]).
+	self assert: colKey size equals: 4.
+	self assert: (colKey noneSatisfy: [:key | key = #five ])
+]
+
 { #category : #'tests - concurrent' }
 SoilIndexedDictionaryTest >> testConcurrentRemoveKey [
 	| tx1 tx2 tx3 |
@@ -621,6 +650,55 @@ SoilIndexedDictionaryTest >> testIsEmpty [
 	"still not empty in t1"
 	self assert: tx1 root size equals: 1.
 	self deny: tx1 root isEmpty.
+]
+
+{ #category : #tests }
+SoilIndexedDictionaryTest >> testKeysAndValuesDoWithTransAction [
+	| tx tx1 tx2 counter |
+	
+	tx := soil newTransaction.
+	tx root: dict.
+	dict at: #key1 put: #bar1.
+	dict at: #key2 put: #bar2.
+	tx commit.
+	"open a second transaction ..."
+	tx1 := soil newTransaction.
+	tx2 := soil newTransaction.
+
+	counter := 0.
+	tx2 root keysAndValuesDo: [ :key :value |
+		self assert: (value beginsWith: 'bar').
+		self assert: (key asByteArray asString beginsWith: 'key').
+		counter := counter + 1].
+	self assert: counter equals: 2.
+	
+	tx2 root removeKey: #key1.
+	
+	counter := 0.
+	tx2 root do: [ :each |
+		self assert: (each beginsWith: 'bar').
+		counter := counter + 1].
+	self assert: counter equals: 1.
+	
+	tx2 commit.
+	"in tx1 the key is not removed, do: correcty uses the restorValue"
+	counter := 0.
+	tx1 root  keysAndValuesDo: [ :key :value |
+		self assert: (value beginsWith: 'bar').
+		self assert: (key asByteArray asString beginsWith: 'key').
+		counter := counter + 1].
+	self assert: counter equals: 2.
+	
+	"we can remove the key in tx1, were it still exists"
+	tx1 root removeKey: #key1.
+	counter := 0.
+	tx1 root  keysAndValuesDo: [ :key :value |
+		self assert: (value beginsWith: 'bar').
+		self assert: (key asByteArray asString beginsWith: 'key').
+		counter := counter + 1].
+	self assert: counter equals: 1.
+	
+	
 ]
 
 { #category : #tests }

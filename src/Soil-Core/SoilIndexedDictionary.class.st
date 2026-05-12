@@ -161,6 +161,12 @@ SoilIndexedDictionary >> keySize: anInteger [
 	index keySize: anInteger 
 ]
 
+{ #category : #enumerating }
+SoilIndexedDictionary >> keysAndValuesDo: aBlock [
+	self newIterator associationsDo: [ :asso | 
+		asso value ifNotNil: [ aBlock value: asso key value: asso value ]]
+]
+
 { #category : #accessing }
 SoilIndexedDictionary >> last [
 	^ self newIterator last
