@@ -35,7 +35,7 @@ SoilReadOnlyStrategy >> prepareCommit [
 	ignoreWriteAttempts ifFalse: [ 
 		transaction objectMap do: [ :each | 
 			each hasChanged ifTrue: [
-				 SoilWriteOnReadOnlyTransaction new 
+				 ^ SoilWriteOnReadOnlyTransaction new 
 					object: each object;
 					signal ] ] ]
 ]
