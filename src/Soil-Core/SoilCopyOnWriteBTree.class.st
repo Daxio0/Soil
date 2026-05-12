@@ -17,8 +17,8 @@ SoilCopyOnWriteBTree >> allocatePage [
 ]
 
 { #category : #testing }
-SoilCopyOnWriteBTree >> isRegistered [
-	^ wrapped isRegistered
+SoilCopyOnWriteBTree >> isPresentOnDisk [
+	^ wrapped isPresentOnDisk
 ]
 
 { #category : #'instance creation' }

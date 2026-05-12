@@ -13,8 +13,8 @@ SoilCopyOnWriteSkipList >> addDirtyPage: aPage [
 ]
 
 { #category : #testing }
-SoilCopyOnWriteSkipList >> isRegistered [
-	^ wrapped isRegistered
+SoilCopyOnWriteSkipList >> isPresentOnDisk [
+	^ wrapped isPresentOnDisk
 ]
 
 { #category : #accessing }
