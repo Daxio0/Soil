@@ -1,6 +1,6 @@
 Class {
 	#name : #SoilObjectHasConcurrentChange,
-	#superclass : #SoilError,
+	#superclass : #SoilCommitError,
 	#instVars : [
 		'objectId'
 	],
