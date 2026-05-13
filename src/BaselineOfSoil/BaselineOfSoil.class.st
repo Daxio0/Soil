@@ -20,11 +20,3 @@ BaselineOfSoil >> baseline: spec [
 		group: 'tests' with: #('Soil-Core-Tests' 'Soil-File-Tests' 'Soil-Serializer-Tests' );
 		group: 'default' with: #( 'Soil-Core' 'tests' ) 
 ]
-
-{ #category : #'as yet unclassified' }
-BaselineOfSoil >> fuel: spec [
-	
-	spec baseline: 'Fuel' with: [ 
-		spec 
-			repository: 'github://ApptiveGrid/Fuel:development/repository']
-]
