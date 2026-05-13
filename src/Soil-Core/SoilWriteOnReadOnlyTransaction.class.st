@@ -1,6 +1,6 @@
 Class {
 	#name : #SoilWriteOnReadOnlyTransaction,
-	#superclass : #SoilError,
+	#superclass : #SoilCommitError,
 	#instVars : [
 		'object'
 	],
