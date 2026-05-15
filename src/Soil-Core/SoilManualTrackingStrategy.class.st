@@ -11,5 +11,5 @@ SoilManualTrackingStrategy >> markDirty: anObject [
 
 { #category : #'as yet unclassified' }
 SoilManualTrackingStrategy >> prepareCommit [ 
-	
+	self serializeObjects 
 ]

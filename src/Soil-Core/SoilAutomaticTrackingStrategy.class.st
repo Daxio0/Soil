@@ -13,7 +13,8 @@ SoilAutomaticTrackingStrategy >> markDirty: anObject [
 SoilAutomaticTrackingStrategy >> prepareCommit [ 
 	transaction objectMap do: [ :each | 
 		each hasChanged ifTrue: [ 
-			transaction addRecordToCommit: each ] ]
+			transaction addRecordToCommit: each ] ].
+	self serializeObjects 
 ]
 
 { #category : #'as yet unclassified' }

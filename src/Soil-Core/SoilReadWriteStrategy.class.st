@@ -32,3 +32,20 @@ SoilReadWriteStrategy >> ignoreWriteAttempts [
 SoilReadWriteStrategy >> isReadOnly [
 	^ false 
 ]
+
+{ #category : #accessing }
+SoilReadWriteStrategy >> serializeObjects [ 
+	| index |
+	"serialize initial records. While serializing there can be new records 
+	popping up (an object not registered yet in the transaction but is a
+	cluster root"
+
+	index := 1.
+	"process the loop in a way new records that appear while serializing
+	are taken into account"
+	[ index <= transaction recordsToCommit size ] whileTrue: [ | record |
+		record := (transaction recordsToCommit at: index) asNewClusterVersion.
+		transaction recordsToCommit at: index put: record.
+		record serializeObject.
+		index := index + 1 ]
+]

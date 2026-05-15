@@ -116,7 +116,7 @@ SoilTransaction >> basicAbort [
 SoilTransaction >> basicCommit [
 	"serialize objects and collect all to be written records. This can be done without 
 	resources that need locking. This reduces time needed for locking"
-	self prepareRecordsForCommit.
+	commitStrategy prepareCommit.
 	"if there are no records to commit we can just return and don't allocate any
 	resources"
 	self hasModifications ifFalse: [ 
@@ -581,17 +581,6 @@ SoilTransaction >> objectWithId: objectId [
 				yourself ]
 ]
 
-{ #category : #accessing }
-SoilTransaction >> prepareRecordsForCommit [
-	commitStrategy prepareCommit.
-	"serialize initial records. While serializing there can be new records 
-	popping up (an object not registered yet in the transaction but is a
-	cluster root"
-	self serializeObjects.
-	"now the list of records to write is complete"
-
-]
-
 { #category : #printing }
 SoilTransaction >> printOn: aStream [ 
 	aStream << 'transaction read: ' << readVersion asString << ', write: ' << writeVersion asString
@@ -672,19 +661,6 @@ SoilTransaction >> root: anObject [
 { #category : #accessing }
 SoilTransaction >> segmentAt: anInteger [ 
 	^ self objectRepository segmentAt: anInteger 
-]
-
-{ #category : #accessing }
-SoilTransaction >> serializeObjects [
-	| index |
-	index := 1.
-	"process the loop in a way new records that appear while serializing
-	are taken into account"
-	[ index <= recordsToCommit size ] whileTrue: [ | record |
-		record := (recordsToCommit at: index) asNewClusterVersion.
-		recordsToCommit at: index put: record.
-		record serializeObject.
-		index := index + 1 ]
 ]
 
 { #category : #initialization }
