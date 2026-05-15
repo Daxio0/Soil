@@ -5,7 +5,6 @@ Class {
 		'soil',
 		'idMap',
 		'objectMap',
-		'recordsToCommit',
 		'readVersion',
 		'writeVersion',
 		'behaviorDescriptions',
@@ -30,7 +29,7 @@ SoilTransaction >> acquireLocksAndDetectWriteSkew [
 	self resetLastObjectIndexes.
 	"first iterate over all records to acquire locks and check for concurrent 
 	writes. Might be changed later to rely on the journal in case of accident"
-	recordsToCommit do: [ :record |
+	commitStrategy recordsToCommit do: [ :record |
 		record initializeObjectIdsIn: self.
 		"check if the version we've read is still actual. Another transaction could have
 		committed since we last read. Checking for the position in the index is sufficient
@@ -82,13 +81,7 @@ SoilTransaction >> addObjectToBeCommited: anObject [
 	record := objectMap 
 		at: anObject theNonSoilProxy
 		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
-	self addRecordToCommit: record 
-]
-
-{ #category : #adding }
-SoilTransaction >> addRecordToCommit: record [ 
-	(recordsToCommit includes: record) ifFalse: [  
-		recordsToCommit add: record ]
+	commitStrategy addRecordToCommit: record 
 ]
 
 { #category : #accessing }
@@ -100,12 +93,12 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 		transaction: self.
 	idMap at: objectId put: record.
 	objectMap at: anObject put: record.
-	self addRecordToCommit: record
+	commitStrategy addRecordToCommit: record
 ]
 
 { #category : #aborting }
 SoilTransaction >> basicAbort [
-	recordsToCommit := nil.
+	commitStrategy reset.
 	behaviorDescriptions := nil.
 	soil := nil.
 	idMap := nil.
@@ -255,7 +248,7 @@ SoilTransaction >> buildJournal [
 			segment: segment;
 			index: index value) ].
 	"create entries for all new objects and new object versions"
-	recordsToCommit do: [ :record |
+	commitStrategy recordsToCommit do: [ :record |
 		record version: writeVersion.
 		journal addEntries: record asJournalEntry ].
 	"for all new objects with a new behavior we create an entry to
@@ -301,12 +294,12 @@ SoilTransaction >> commitStrategy [
 
 { #category : #actions }
 SoilTransaction >> continue [
-	recordsToCommit isEmpty ifTrue: [ ^ self ].
-	recordsToCommit do: [ :record | | persistentRecord |
+	commitStrategy hasRecordsToCommit ifFalse: [ ^ self ].
+	commitStrategy recordsToCommit do: [ :record | | persistentRecord |
 		persistentRecord := record asPersistentClusterVersion.
 		objectMap at: record object put: persistentRecord.
 		idMap at: record objectId put: persistentRecord ].
-	recordsToCommit := OrderedCollection new.
+	commitStrategy reset.
 	self flag: #todo.
 	"we change the readVersion here so we can read back the 
 	objects we've just changed. But we do not check if all the
@@ -361,8 +354,18 @@ SoilTransaction >> findRecords: aBlock [
 ]
 
 { #category : #testing }
+SoilTransaction >> hasJournalEntries [ 
+	
+	^ journal notNil and: [ journal size > 1 ]
+]
+
+{ #category : #testing }
 SoilTransaction >> hasModifications [ 
-	^ commitStrategy hasModifications 
+	"before committing a transaction collects changes in the journal. While committing
+	recordsToCommit gets populated. We want to ask for modifications regardless of the 
+	phase of the transaction so we check both"
+	^ commitStrategy hasModifications or: [ 
+			self hasJournalEntries ]
 ]
 
 { #category : #accessing }
@@ -377,7 +380,6 @@ SoilTransaction >> initialize [
 	objectMap := IdentityDictionary new.
 	behaviorDescriptions := Dictionary new.
 	locks := OrderedCollection new.
-	recordsToCommit := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
 	self beAutomaticWriteTracking 
 ]
@@ -443,7 +445,7 @@ SoilTransaction >> lockObjectId: aSOObjectId [
 SoilTransaction >> makeNewVersion: classDescription [
 	| record |
 	record := objectMap at: classDescription.
-	self addRecordToCommit: record asNewClusterVersion
+	commitStrategy addRecordToCommit: record asNewClusterVersion
 ]
 
 { #category : #api }
@@ -617,7 +619,7 @@ SoilTransaction >> records [
 
 { #category : #accessing }
 SoilTransaction >> recordsToCommit [
-	^ recordsToCommit
+	^ commitStrategy recordsToCommit 
 ]
 
 { #category : #accessing }

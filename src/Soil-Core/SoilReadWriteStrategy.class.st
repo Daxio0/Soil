@@ -1,12 +1,21 @@
 Class {
 	#name : #SoilReadWriteStrategy,
 	#superclass : #SoilCommitStrategy,
+	#instVars : [
+		'recordsToCommit'
+	],
 	#category : #'Soil-Core'
 }
 
 { #category : #testing }
 SoilReadWriteStrategy class >> isAbstract [ 
 	^ self == SoilReadWriteStrategy 
+]
+
+{ #category : #adding }
+SoilReadWriteStrategy >> addRecordToCommit: record [ 
+	(recordsToCommit includes: record) ifFalse: [  
+		recordsToCommit add: record ]
 ]
 
 { #category : #accessing }
@@ -16,11 +25,12 @@ SoilReadWriteStrategy >> errorOnWriteAttempts [
 
 { #category : #testing }
 SoilReadWriteStrategy >> hasModifications [ 
-	"before committing a transaction collects changes in the journal. While committing
-	recordsToCommit gets populated. We want to ask for modifications regardless of the 
-	phase of the transaction so we check both"
-	^ (transaction recordsToCommit notNil and: [ transaction recordsToCommit notEmpty ]) 
-		or: [ transaction journal notNil and: [ transaction journal size > 1 ] ]
+	^ recordsToCommit notNil and: [ recordsToCommit notEmpty ]
+]
+
+{ #category : #testing }
+SoilReadWriteStrategy >> hasRecordsToCommit [ 
+	^ recordsToCommit notEmpty
 ]
 
 { #category : #accessing }
@@ -28,9 +38,25 @@ SoilReadWriteStrategy >> ignoreWriteAttempts [
 	self error: 'a read-write transaction does not ignore write attempts'
 ]
 
+{ #category : #initialization }
+SoilReadWriteStrategy >> initialize [ 
+	super initialize.
+	self reset
+]
+
 { #category : #testing }
 SoilReadWriteStrategy >> isReadOnly [
 	^ false 
+]
+
+{ #category : #accessing }
+SoilReadWriteStrategy >> recordsToCommit [
+	^ recordsToCommit
+]
+
+{ #category : #public }
+SoilReadWriteStrategy >> reset [ 
+	recordsToCommit := OrderedCollection new
 ]
 
 { #category : #accessing }
@@ -43,9 +69,9 @@ SoilReadWriteStrategy >> serializeObjects [
 	index := 1.
 	"process the loop in a way new records that appear while serializing
 	are taken into account"
-	[ index <= transaction recordsToCommit size ] whileTrue: [ | record |
-		record := (transaction recordsToCommit at: index) asNewClusterVersion.
-		transaction recordsToCommit at: index put: record.
+	[ index <= recordsToCommit size ] whileTrue: [ | record |
+		record := (recordsToCommit at: index) asNewClusterVersion.
+		recordsToCommit at: index put: record.
 		record serializeObject.
 		index := index + 1 ]
 ]

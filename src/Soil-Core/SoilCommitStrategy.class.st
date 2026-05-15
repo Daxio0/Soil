@@ -47,8 +47,12 @@ SoilCommitStrategy >> prepareCommit [
 { #category : #'as yet unclassified' }
 SoilCommitStrategy >> recordMaterialized: record materializer: materializer [
 	(autoMigration and: [ materializer clusterCanBeMigrated ]) 
-		ifTrue: [ transaction addRecordToCommit: record. ].
+		ifTrue: [ self addRecordToCommit: record. ].
 
+]
+
+{ #category : #initialization }
+SoilCommitStrategy >> reset [ 
 ]
 
 { #category : #accessing }
