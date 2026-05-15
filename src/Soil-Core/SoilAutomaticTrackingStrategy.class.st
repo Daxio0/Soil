@@ -13,7 +13,7 @@ SoilAutomaticTrackingStrategy >> markDirty: anObject [
 SoilAutomaticTrackingStrategy >> prepareCommit [ 
 	transaction objectMap do: [ :each | 
 		each hasChanged ifTrue: [ 
-			self addRecordToCommit: each ] ].
+			self addRecord: each ] ].
 	self serializeObjects 
 ]
 

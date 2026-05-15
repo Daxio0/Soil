@@ -2,7 +2,7 @@ Class {
 	#name : #SoilReadWriteStrategy,
 	#superclass : #SoilCommitStrategy,
 	#instVars : [
-		'recordsToCommit'
+		'records'
 	],
 	#category : #'Soil-Core'
 }
@@ -13,9 +13,9 @@ SoilReadWriteStrategy class >> isAbstract [
 ]
 
 { #category : #adding }
-SoilReadWriteStrategy >> addRecordToCommit: record [ 
-	(recordsToCommit includes: record) ifFalse: [  
-		recordsToCommit add: record ]
+SoilReadWriteStrategy >> addRecord: record [ 
+	(records includes: record) ifFalse: [  
+		records add: record ]
 ]
 
 { #category : #accessing }
@@ -25,12 +25,12 @@ SoilReadWriteStrategy >> errorOnWriteAttempts [
 
 { #category : #testing }
 SoilReadWriteStrategy >> hasModifications [ 
-	^ recordsToCommit notNil and: [ recordsToCommit notEmpty ]
+	^ records notNil and: [ records notEmpty ]
 ]
 
 { #category : #testing }
 SoilReadWriteStrategy >> hasRecordsToCommit [ 
-	^ recordsToCommit notEmpty
+	^ records notEmpty
 ]
 
 { #category : #accessing }
@@ -50,13 +50,13 @@ SoilReadWriteStrategy >> isReadOnly [
 ]
 
 { #category : #accessing }
-SoilReadWriteStrategy >> recordsToCommit [
-	^ recordsToCommit
+SoilReadWriteStrategy >> records [
+	^ records
 ]
 
 { #category : #public }
 SoilReadWriteStrategy >> reset [ 
-	recordsToCommit := OrderedCollection new
+	records := OrderedCollection new
 ]
 
 { #category : #accessing }
@@ -69,9 +69,9 @@ SoilReadWriteStrategy >> serializeObjects [
 	index := 1.
 	"process the loop in a way new records that appear while serializing
 	are taken into account"
-	[ index <= recordsToCommit size ] whileTrue: [ | record |
-		record := (recordsToCommit at: index) asNewClusterVersion.
-		recordsToCommit at: index put: record.
+	[ index <= records size ] whileTrue: [ | record |
+		record := (records at: index) asNewClusterVersion.
+		records at: index put: record.
 		record serializeObject.
 		index := index + 1 ]
 ]

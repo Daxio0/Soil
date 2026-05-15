@@ -29,7 +29,7 @@ SoilTransaction >> acquireLocksAndDetectWriteSkew [
 	self resetLastObjectIndexes.
 	"first iterate over all records to acquire locks and check for concurrent 
 	writes. Might be changed later to rely on the journal in case of accident"
-	commitStrategy recordsToCommit do: [ :record |
+	commitStrategy records do: [ :record |
 		record initializeObjectIdsIn: self.
 		"check if the version we've read is still actual. Another transaction could have
 		committed since we last read. Checking for the position in the index is sufficient
@@ -81,7 +81,7 @@ SoilTransaction >> addObjectToBeCommited: anObject [
 	record := objectMap 
 		at: anObject theNonSoilProxy
 		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
-	commitStrategy addRecordToCommit: record 
+	commitStrategy addRecord: record 
 ]
 
 { #category : #accessing }
@@ -93,7 +93,7 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 		transaction: self.
 	idMap at: objectId put: record.
 	objectMap at: anObject put: record.
-	commitStrategy addRecordToCommit: record
+	commitStrategy addRecord: record
 ]
 
 { #category : #aborting }
@@ -248,7 +248,7 @@ SoilTransaction >> buildJournal [
 			segment: segment;
 			index: index value) ].
 	"create entries for all new objects and new object versions"
-	commitStrategy recordsToCommit do: [ :record |
+	commitStrategy records do: [ :record |
 		record version: writeVersion.
 		journal addEntries: record asJournalEntry ].
 	"for all new objects with a new behavior we create an entry to
@@ -295,7 +295,7 @@ SoilTransaction >> commitStrategy [
 { #category : #actions }
 SoilTransaction >> continue [
 	commitStrategy hasRecordsToCommit ifFalse: [ ^ self ].
-	commitStrategy recordsToCommit do: [ :record | | persistentRecord |
+	commitStrategy records do: [ :record | | persistentRecord |
 		persistentRecord := record asPersistentClusterVersion.
 		objectMap at: record object put: persistentRecord.
 		idMap at: record objectId put: persistentRecord ].
@@ -445,7 +445,7 @@ SoilTransaction >> lockObjectId: aSOObjectId [
 SoilTransaction >> makeNewVersion: classDescription [
 	| record |
 	record := objectMap at: classDescription.
-	commitStrategy addRecordToCommit: record asNewClusterVersion
+	commitStrategy addRecord: record asNewClusterVersion
 ]
 
 { #category : #api }
@@ -614,12 +614,7 @@ SoilTransaction >> recordWithId: objectId [
 
 { #category : #accessing }
 SoilTransaction >> records [
-	^ idMap values
-]
-
-{ #category : #accessing }
-SoilTransaction >> recordsToCommit [
-	^ commitStrategy recordsToCommit 
+	^ commitStrategy records 
 ]
 
 { #category : #accessing }
