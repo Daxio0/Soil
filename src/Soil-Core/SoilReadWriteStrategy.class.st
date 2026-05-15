@@ -29,7 +29,7 @@ SoilReadWriteStrategy >> hasModifications [
 ]
 
 { #category : #testing }
-SoilReadWriteStrategy >> hasRecordsToCommit [ 
+SoilReadWriteStrategy >> hasRecords [ 
 	^ records notEmpty
 ]
 

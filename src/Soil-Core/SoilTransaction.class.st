@@ -294,7 +294,7 @@ SoilTransaction >> commitStrategy [
 
 { #category : #actions }
 SoilTransaction >> continue [
-	commitStrategy hasRecordsToCommit ifFalse: [ ^ self ].
+	commitStrategy hasRecords ifFalse: [ ^ self ].
 	commitStrategy records do: [ :record | | persistentRecord |
 		persistentRecord := record asPersistentClusterVersion.
 		objectMap at: record object put: persistentRecord.
