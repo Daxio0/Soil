@@ -4,11 +4,6 @@ Class {
 	#category : #'Soil-Core'
 }
 
-{ #category : #testing }
-SoilAutomaticTrackingStrategy >> isReadOnly [ 
-	^ false 
-]
-
 { #category : #public }
 SoilAutomaticTrackingStrategy >> markDirty: anObject [ 
 	"do nothing"

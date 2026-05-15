@@ -4,11 +4,6 @@ Class {
 	#category : #'Soil-Core'
 }
 
-{ #category : #testing }
-SoilManualTrackingStrategy >> isReadOnly [
-	^ false 
-]
-
 { #category : #public }
 SoilManualTrackingStrategy >> markDirty: anObject [ 
 	transaction addObjectToBeCommited: anObject 

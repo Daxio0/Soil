@@ -13,6 +13,11 @@ SoilCommitStrategy >> beAutoMigrating [
 	autoMigration := true
 ]
 
+{ #category : #testing }
+SoilCommitStrategy >> hasModifications [ 
+	self subclassResponsibility 
+]
+
 { #category : #initialization }
 SoilCommitStrategy >> initialize [ 
 	super initialize.

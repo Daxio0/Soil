@@ -362,7 +362,7 @@ SoilTransaction >> findRecords: aBlock [
 
 { #category : #testing }
 SoilTransaction >> hasModifications [ 
-	^ (recordsToCommit notNil and: [ recordsToCommit notEmpty ]) or: [ journal notNil and: [ journal size > 1 ] ]
+	^ commitStrategy hasModifications 
 ]
 
 { #category : #accessing }
