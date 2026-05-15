@@ -613,11 +613,6 @@ SoilTransaction >> recordWithId: objectId [
 ]
 
 { #category : #accessing }
-SoilTransaction >> records [
-	^ commitStrategy records 
-]
-
-{ #category : #accessing }
 SoilTransaction >> registerRecord: record [
 	record objectId ifNil: [ Error signal: 'register record needs an objectId' ].
 	record object ifNil: [ Error signal: 'register record needs an object' ].
