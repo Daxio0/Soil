@@ -5,7 +5,6 @@ Class {
 		'soil',
 		'idMap',
 		'objectMap',
-		'recordsToCommit',
 		'readVersion',
 		'writeVersion',
 		'behaviorDescriptions',
@@ -30,7 +29,7 @@ SoilTransaction >> acquireLocksAndDetectWriteSkew [
 	self resetLastObjectIndexes.
 	"first iterate over all records to acquire locks and check for concurrent 
 	writes. Might be changed later to rely on the journal in case of accident"
-	recordsToCommit do: [ :record |
+	commitStrategy records do: [ :record |
 		record initializeObjectIdsIn: self.
 		"check if the version we've read is still actual. Another transaction could have
 		committed since we last read. Checking for the position in the index is sufficient
@@ -82,13 +81,7 @@ SoilTransaction >> addObjectToBeCommited: anObject [
 	record := objectMap 
 		at: anObject theNonSoilProxy
 		ifAbsent: [ SoilNotAClusterRoot signal: 'cannot mark dirty a non-existing root' ].
-	self addRecordToCommit: record 
-]
-
-{ #category : #adding }
-SoilTransaction >> addRecordToCommit: record [ 
-	(recordsToCommit includes: record) ifFalse: [  
-		recordsToCommit add: record ]
+	commitStrategy addRecord: record 
 ]
 
 { #category : #accessing }
@@ -100,12 +93,12 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 		transaction: self.
 	idMap at: objectId put: record.
 	objectMap at: anObject put: record.
-	self addRecordToCommit: record
+	commitStrategy addRecord: record
 ]
 
 { #category : #aborting }
 SoilTransaction >> basicAbort [
-	recordsToCommit := nil.
+	commitStrategy reset.
 	behaviorDescriptions := nil.
 	soil := nil.
 	idMap := nil.
@@ -116,7 +109,7 @@ SoilTransaction >> basicAbort [
 SoilTransaction >> basicCommit [
 	"serialize objects and collect all to be written records. This can be done without 
 	resources that need locking. This reduces time needed for locking"
-	self prepareRecordsForCommit.
+	commitStrategy prepareCommit.
 	"if there are no records to commit we can just return and don't allocate any
 	resources"
 	self hasModifications ifFalse: [ 
@@ -255,7 +248,7 @@ SoilTransaction >> buildJournal [
 			segment: segment;
 			index: index value) ].
 	"create entries for all new objects and new object versions"
-	recordsToCommit do: [ :record |
+	commitStrategy records do: [ :record |
 		record version: writeVersion.
 		journal addEntries: record asJournalEntry ].
 	"for all new objects with a new behavior we create an entry to
@@ -301,12 +294,12 @@ SoilTransaction >> commitStrategy [
 
 { #category : #actions }
 SoilTransaction >> continue [
-	recordsToCommit isEmpty ifTrue: [ ^ self ].
-	recordsToCommit do: [ :record | | persistentRecord |
+	commitStrategy hasRecords ifFalse: [ ^ self ].
+	commitStrategy records do: [ :record | | persistentRecord |
 		persistentRecord := record asPersistentClusterVersion.
 		objectMap at: record object put: persistentRecord.
 		idMap at: record objectId put: persistentRecord ].
-	recordsToCommit := OrderedCollection new.
+	commitStrategy reset.
 	self flag: #todo.
 	"we change the readVersion here so we can read back the 
 	objects we've just changed. But we do not check if all the
@@ -361,8 +354,18 @@ SoilTransaction >> findRecords: aBlock [
 ]
 
 { #category : #testing }
+SoilTransaction >> hasJournalEntries [ 
+	
+	^ journal notNil and: [ journal size > 1 ]
+]
+
+{ #category : #testing }
 SoilTransaction >> hasModifications [ 
-	^ (recordsToCommit notNil and: [ recordsToCommit notEmpty ]) or: [ journal notNil and: [ journal size > 1 ] ]
+	"before committing a transaction collects changes in the journal. While committing
+	recordsToCommit gets populated. We want to ask for modifications regardless of the 
+	phase of the transaction so we check both"
+	^ commitStrategy hasModifications or: [ 
+			self hasJournalEntries ]
 ]
 
 { #category : #accessing }
@@ -377,7 +380,6 @@ SoilTransaction >> initialize [
 	objectMap := IdentityDictionary new.
 	behaviorDescriptions := Dictionary new.
 	locks := OrderedCollection new.
-	recordsToCommit := OrderedCollection new.
 	indexUpdatesToCommit := OrderedCollection new.
 	self beAutomaticWriteTracking 
 ]
@@ -443,7 +445,7 @@ SoilTransaction >> lockObjectId: aSOObjectId [
 SoilTransaction >> makeNewVersion: classDescription [
 	| record |
 	record := objectMap at: classDescription.
-	self addRecordToCommit: record asNewClusterVersion
+	commitStrategy addRecord: record asNewClusterVersion
 ]
 
 { #category : #api }
@@ -581,17 +583,6 @@ SoilTransaction >> objectWithId: objectId [
 				yourself ]
 ]
 
-{ #category : #accessing }
-SoilTransaction >> prepareRecordsForCommit [
-	commitStrategy prepareCommit.
-	"serialize initial records. While serializing there can be new records 
-	popping up (an object not registered yet in the transaction but is a
-	cluster root"
-	self serializeObjects.
-	"now the list of records to write is complete"
-
-]
-
 { #category : #printing }
 SoilTransaction >> printOn: aStream [ 
 	aStream << 'transaction read: ' << readVersion asString << ', write: ' << writeVersion asString
@@ -619,16 +610,6 @@ SoilTransaction >> recordWithId: objectId [
 	^ self objectRepository 
 		at: objectId 
 		version: readVersion
-]
-
-{ #category : #accessing }
-SoilTransaction >> records [
-	^ idMap values
-]
-
-{ #category : #accessing }
-SoilTransaction >> recordsToCommit [
-	^ recordsToCommit
 ]
 
 { #category : #accessing }
@@ -672,19 +653,6 @@ SoilTransaction >> root: anObject [
 { #category : #accessing }
 SoilTransaction >> segmentAt: anInteger [ 
 	^ self objectRepository segmentAt: anInteger 
-]
-
-{ #category : #accessing }
-SoilTransaction >> serializeObjects [
-	| index |
-	index := 1.
-	"process the loop in a way new records that appear while serializing
-	are taken into account"
-	[ index <= recordsToCommit size ] whileTrue: [ | record |
-		record := (recordsToCommit at: index) asNewClusterVersion.
-		recordsToCommit at: index put: record.
-		record serializeObject.
-		index := index + 1 ]
 ]
 
 { #category : #initialization }

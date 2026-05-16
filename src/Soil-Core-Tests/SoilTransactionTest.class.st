@@ -35,7 +35,7 @@ SoilTransactionTest >> testAddSameObjectIdTwice [
 	tx := SoilTransaction new.
 	tx atObjectId: (SoilObjectId segment: 1 index: 0) putObject: Object new. 
 	tx atObjectId: (SoilObjectId segment: 1 index: 0) putObject: Object new. 
-	self assert: tx recordsToCommit size equals: 2
+	self assert: tx commitStrategy records size equals: 2
 ]
 
 { #category : #tests }
@@ -131,13 +131,13 @@ SoilTransactionTest >> testTwoRootsWithAlwaysRoot [
 	obj2 := SOTestClusterAlwaysRoot new.
 	obj1 nested: obj2.
 	tx makeRoot: obj1.
-	self assert: tx records size equals: 1.
+	self assert: tx commitStrategy records size equals: 1.
 	"obj1 is made root but refers to an object that has a class
 	side setting for being root. The second object is being made
 	root when serializing obj1 "
 	tx basicCommit.
 	"expect 4 records: 2 instances and 2 classes"
-	self assert: tx records size equals: 4
+	self assert: tx commitStrategy records size equals: 4
 ]
 
 { #category : #tests }
@@ -148,5 +148,5 @@ SoilTransactionTest >> testTwoRootsWithMakeRoot [
 	obj2 := Object new.
 	tx makeRoot: obj1.
 	tx makeRoot: obj2.
-	self assert: tx records size equals: 2
+	self assert: tx commitStrategy records size equals: 2
 ]

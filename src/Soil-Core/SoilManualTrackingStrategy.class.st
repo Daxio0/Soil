@@ -4,11 +4,6 @@ Class {
 	#category : #'Soil-Core'
 }
 
-{ #category : #testing }
-SoilManualTrackingStrategy >> isReadOnly [
-	^ false 
-]
-
 { #category : #public }
 SoilManualTrackingStrategy >> markDirty: anObject [ 
 	transaction addObjectToBeCommited: anObject 
@@ -16,5 +11,5 @@ SoilManualTrackingStrategy >> markDirty: anObject [
 
 { #category : #'as yet unclassified' }
 SoilManualTrackingStrategy >> prepareCommit [ 
-	
+	self serializeObjects 
 ]

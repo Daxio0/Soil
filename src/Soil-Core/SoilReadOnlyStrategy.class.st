@@ -12,6 +12,11 @@ SoilReadOnlyStrategy >> errorOnWriteAttempts [
 	ignoreWriteAttempts := false
 ]
 
+{ #category : #testing }
+SoilReadOnlyStrategy >> hasModifications [ 
+	^ false 
+]
+
 { #category : #accessing }
 SoilReadOnlyStrategy >> ignoreWriteAttempts [ 
 	ignoreWriteAttempts := true

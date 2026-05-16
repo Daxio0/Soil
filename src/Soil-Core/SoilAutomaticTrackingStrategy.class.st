@@ -4,11 +4,6 @@ Class {
 	#category : #'Soil-Core'
 }
 
-{ #category : #testing }
-SoilAutomaticTrackingStrategy >> isReadOnly [ 
-	^ false 
-]
-
 { #category : #public }
 SoilAutomaticTrackingStrategy >> markDirty: anObject [ 
 	"do nothing"
@@ -18,7 +13,8 @@ SoilAutomaticTrackingStrategy >> markDirty: anObject [
 SoilAutomaticTrackingStrategy >> prepareCommit [ 
 	transaction objectMap do: [ :each | 
 		each hasChanged ifTrue: [ 
-			transaction addRecordToCommit: each ] ]
+			self addRecord: each ] ].
+	self serializeObjects 
 ]
 
 { #category : #'as yet unclassified' }
