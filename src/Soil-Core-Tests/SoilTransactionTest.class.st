@@ -44,7 +44,7 @@ SoilTransactionTest >> testCheckpointAndContinue [
 	tx := soil newTransaction.
 	tx root: Object new.
 	tx commitAndContinue.
-	self deny: tx hasModifications.
+	self deny: tx needsCommit .
 	 
 	
 ]

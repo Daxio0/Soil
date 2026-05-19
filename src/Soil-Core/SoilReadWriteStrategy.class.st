@@ -24,7 +24,7 @@ SoilReadWriteStrategy >> errorOnWriteAttempts [
 ]
 
 { #category : #testing }
-SoilReadWriteStrategy >> hasModifications [ 
+SoilReadWriteStrategy >> hasChanges [ 
 	^ records notNil and: [ records notEmpty ]
 ]
 
@@ -45,8 +45,8 @@ SoilReadWriteStrategy >> initialize [
 ]
 
 { #category : #testing }
-SoilReadWriteStrategy >> isReadOnly [
-	^ false 
+SoilReadWriteStrategy >> isWritable [
+	^ true
 ]
 
 { #category : #accessing }

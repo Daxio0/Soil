@@ -14,7 +14,7 @@ SoilCommitStrategy >> beAutoMigrating [
 ]
 
 { #category : #testing }
-SoilCommitStrategy >> hasModifications [ 
+SoilCommitStrategy >> hasChanges [ 
 	self subclassResponsibility 
 ]
 
@@ -30,7 +30,7 @@ SoilCommitStrategy >> isAutoMigrating [
 ]
 
 { #category : #testing }
-SoilCommitStrategy >> isReadOnly [ 
+SoilCommitStrategy >> isWritable [
 	self subclassResponsibility 
 ]
 

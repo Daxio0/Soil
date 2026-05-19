@@ -201,7 +201,7 @@ SoilMetrics >> transactionAborted: aSoilTransaction [
 { #category : #counting }
 SoilMetrics >> transactionCommitted: aSoilTransaction [ 
 	super transactionCommitted: aSoilTransaction. 
-	aSoilTransaction hasModifications 
+	aSoilTransaction needsCommit 
 		ifTrue: [ transactionsCommittedWrite := transactionsCommittedWrite + 1 ]
 		ifFalse: [ transactionsCommittedReadOnly := transactionsCommittedReadOnly + 1 ]
 ]

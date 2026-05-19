@@ -101,7 +101,7 @@ SoilMetadata >> soil: aSoil [
 
 { #category : #counting }
 SoilMetadata >> transactionCommitted: aSoilTransaction [ 
-	aSoilTransaction hasModifications ifTrue: [ 
+	aSoilTransaction needsCommit ifTrue: [ 
 		self lastModified: DateAndTime now  ]
 ]
 

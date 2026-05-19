@@ -13,7 +13,7 @@ SoilReadOnlyStrategy >> errorOnWriteAttempts [
 ]
 
 { #category : #testing }
-SoilReadOnlyStrategy >> hasModifications [ 
+SoilReadOnlyStrategy >> hasChanges [ 
 	^ false 
 ]
 
@@ -23,8 +23,8 @@ SoilReadOnlyStrategy >> ignoreWriteAttempts [
 ]
 
 { #category : #testing }
-SoilReadOnlyStrategy >> isReadOnly [ 
-	^ true 
+SoilReadOnlyStrategy >> isWritable [
+	^ false
 ]
 
 { #category : #public }
