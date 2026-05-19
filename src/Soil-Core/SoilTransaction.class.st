@@ -112,7 +112,7 @@ SoilTransaction >> basicCommit [
 	commitStrategy prepareCommit.
 	"if there are no records to commit we can just return and don't allocate any
 	resources"
-	self hasModifications ifFalse: [ 
+	self needsCommit ifFalse: [ 
 		soil notificationHandler transactionCommitted: self.
 		^ self ].
 	"only one transactions is allowed at a time. We use the critical block of the database
@@ -354,18 +354,18 @@ SoilTransaction >> findRecords: aBlock [
 ]
 
 { #category : #testing }
-SoilTransaction >> hasJournalEntries [ 
-	
-	^ journal notNil and: [ journal size > 1 ]
-]
-
-{ #category : #testing }
-SoilTransaction >> hasModifications [ 
+SoilTransaction >> hasChanges [ 
 	"before committing a transaction collects changes in the journal. While committing
 	recordsToCommit gets populated. We want to ask for modifications regardless of the 
 	phase of the transaction so we check both"
-	^ commitStrategy hasModifications or: [ 
+	^ commitStrategy hasChanges or: [ 
 			self hasJournalEntries ]
+]
+
+{ #category : #testing }
+SoilTransaction >> hasJournalEntries [ 
+	
+	^ journal notNil and: [ journal size > 1 ]
 ]
 
 { #category : #accessing }
@@ -418,7 +418,7 @@ SoilTransaction >> isPersistent: anObject [
 
 { #category : #testing }
 SoilTransaction >> isReadOnly [ 
-	^ commitStrategy isReadOnly 
+	^ self isWritable not
 ]
 
 { #category : #testing }
@@ -428,6 +428,11 @@ SoilTransaction >> isRoot: anObject [
 	^ (objectMap 
 		at: anObject theNonSoilProxy 
 		ifAbsent: nil) notNil
+]
+
+{ #category : #testing }
+SoilTransaction >> isWritable [
+	^ commitStrategy isWritable
 ]
 
 { #category : #accessing }
@@ -451,7 +456,7 @@ SoilTransaction >> makeNewVersion: classDescription [
 { #category : #api }
 SoilTransaction >> makeRoot: anObject [ 
 	| objectId |
-	self isReadOnly ifTrue: [ 
+	self isWritable ifFalse: [ 
 		SoilWriteOnReadOnlyTransaction new 
 			object: anObject;
 			signal ].
@@ -480,6 +485,12 @@ SoilTransaction >> materializeRecord: record [
 		materializer: materializer.
 		
 	^ record 
+]
+
+{ #category : #'as yet unclassified' }
+SoilTransaction >> needsCommit [ 
+
+	^ self isWritable and: [ self hasChanges ]
 ]
 
 { #category : #'instance creation' }

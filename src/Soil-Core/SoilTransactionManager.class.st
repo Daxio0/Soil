@@ -33,7 +33,7 @@ SoilTransactionManager >> addTransaction: aSoilTransaction [
 { #category : #'commit/abort' }
 SoilTransactionManager >> commitAndContinueTransaction: aTransaction [ 	
 	aTransaction basicCommit.
-	aTransaction hasModifications ifTrue: [ 
+	aTransaction needsCommit ifTrue: [ 
 		soil checkpoint ].
 	aTransaction continue
 ]
@@ -42,7 +42,7 @@ SoilTransactionManager >> commitAndContinueTransaction: aTransaction [
 SoilTransactionManager >> commitTransaction: aTransaction [ 	
 	| modified |
 	aTransaction basicCommit.
-	modified := aTransaction hasModifications.
+	modified := aTransaction needsCommit .
 	aTransaction basicAbort.
 	self removeTransaction: aTransaction.
 	modified ifTrue: [ 
