@@ -100,7 +100,6 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 SoilTransaction >> basicAbort [
 	commitStrategy reset.
 	behaviorDescriptions := nil.
-	soil := nil.
 	idMap := nil.
 	objectMap := nil
 ]
@@ -403,7 +402,7 @@ SoilTransaction >> initializeObjectId: anObjectId [
 
 { #category : #testing }
 SoilTransaction >> isAborted [
-	^ soil isNil and:[ idMap isNil and: [objectMap isNil]]
+	^ idMap isNil and: [objectMap isNil]
 ]
 
 { #category : #testing }
