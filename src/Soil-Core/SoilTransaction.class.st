@@ -100,7 +100,6 @@ SoilTransaction >> atObjectId: objectId putObject: anObject [
 SoilTransaction >> basicAbort [
 	commitStrategy reset.
 	behaviorDescriptions := nil.
-	soil := nil.
 	idMap := nil.
 	objectMap := nil
 ]
