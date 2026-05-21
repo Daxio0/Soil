@@ -402,7 +402,7 @@ SoilTransaction >> initializeObjectId: anObjectId [
 
 { #category : #testing }
 SoilTransaction >> isAborted [
-	^ soil isNil and:[ idMap isNil and: [objectMap isNil]]
+	^ idMap isNil and: [objectMap isNil]
 ]
 
 { #category : #testing }
