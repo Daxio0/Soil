@@ -127,6 +127,12 @@ SoilPersistentDatabaseJournal >> fragmentFiles [
 			yourself ]
 ]
 
+{ #category : #hooks }
+SoilPersistentDatabaseJournal >> fuelAccept: aGeneralMapper [
+	"We don't want to store all available journals to fuel"
+	^ aGeneralMapper visitSubstitution: self by: nil
+]
+
 { #category : #queries }
 SoilPersistentDatabaseJournal >> historyOfObjectId: aSoilObjectId [ 
 	| history objectEntries transactionStart |

@@ -221,6 +221,12 @@ Soil >> findRecord: aBlock [
 		ensure: [ tx abort ]
 ]
 
+{ #category : #hooks }
+Soil >> fuelAccept: aGeneralMapper [
+	"We do not want to serialize a complete database to fuel"
+	^ aGeneralMapper visitSubstitution: self by: nil
+]
+
 { #category : #'memory space' }
 Soil >> garbageCollect [
 	Error signal: 'garbage collect is not ready to be used, yet'.
@@ -431,9 +437,11 @@ Soil >> path: aString [
 
 { #category : #printing }
 Soil >> printOn: aStream [ 
+	aStream << 'Soil ['.
+	self isOpen 
+		ifTrue: [ self control databaseVersion printString ]
+		ifFalse: [ #closed ].
 	aStream 
-		<< 'Soil ['
-		<< self control databaseVersion printString
 		<< '] '
 		<< self path pathString
 ]
