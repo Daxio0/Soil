@@ -24,3 +24,9 @@ SoilUnresolvedProxy >> objectId: anObject [
 
 	objectId := anObject
 ]
+
+{ #category : #printing }
+SoilUnresolvedProxy >> printOn: aStream [ 
+	aStream << 'unresolved proxy '.
+	objectId printOn: aStream 
+]
