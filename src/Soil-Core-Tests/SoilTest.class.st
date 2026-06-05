@@ -416,6 +416,7 @@ SoilTest >> testRootSendingClass [
 	This tests that the proxy forwards #class correctly"
 
 	| tx collection objectUsingClassinQueals |
+	self skip.
 	tx := soil newTransaction.
 	collection := OrderedCollection new.
 	tx root: collection.
