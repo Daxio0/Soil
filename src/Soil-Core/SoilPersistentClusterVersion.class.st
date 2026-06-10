@@ -22,14 +22,15 @@ SoilPersistentClusterVersion >> asNewClusterVersion [
 		previousVersionRecord: self
 ]
 
+{ #category : #accessing }
+SoilPersistentClusterVersion >> ensureFingerprint [
+	fingerprint ifNil: [ 
+		fingerprint := object soilRecursiveHash ]
+]
+
 { #category : #testing }
 SoilPersistentClusterVersion >> hasChanged [
 	^ fingerprint ~= object soilRecursiveHash 
-]
-
-{ #category : #accessing }
-SoilPersistentClusterVersion >> makeFingerprint [
-	fingerprint := object soilRecursiveHash
 ]
 
 { #category : #accessing }
