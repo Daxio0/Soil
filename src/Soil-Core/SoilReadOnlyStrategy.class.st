@@ -51,5 +51,5 @@ SoilReadOnlyStrategy >> recordMaterialized: record materializer: materializer [
 	"if we want to find out what has changed we need to make a 
 	fingerprint even in read-only mode"
 	ignoreWriteAttempts ifFalse: [ 
-		record makeFingerprint ].
+		record ensureFingerprint ].
 ]
